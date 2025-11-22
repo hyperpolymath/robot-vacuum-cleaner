@@ -1,0 +1,54 @@
+# RFC 9116 Compliant Security.txt
+# https://securitytxt.org/
+
+Contact: mailto:security@robot-vacuum.example.com
+Contact: https://github.com/Hyperpolymath/robot-vacuum-cleaner/security/advisories/new
+Expires: 2025-11-22T00:00:00.000Z
+Encryption: https://robot-vacuum.example.com/pgp-key.asc
+Preferred-Languages: en
+Canonical: https://robot-vacuum.example.com/.well-known/security.txt
+Policy: https://github.com/Hyperpolymath/robot-vacuum-cleaner/blob/main/SECURITY.md
+Hiring: https://robot-vacuum.example.com/careers
+Acknowledgments: https://github.com/Hyperpolymath/robot-vacuum-cleaner/blob/main/SECURITY.md#security-advisories
+
+# Additional Information
+#
+# Vulnerability Disclosure Policy:
+# We follow coordinated disclosure with a 90-day timeline.
+# Please report security issues privately to allow time for fixes.
+#
+# Scope:
+# - All code in this repository
+# - Official container images
+# - GraphQL API endpoints
+# - CI/CD infrastructure (if exploitable)
+#
+# Out of Scope:
+# - Denial of service attacks
+# - Social engineering
+# - Physical security
+# - Third-party dependencies (report to upstream)
+#
+# Safe Harbor:
+# We commit to not pursue legal action against researchers who:
+# - Report vulnerabilities responsibly
+# - Do not access or modify user data
+# - Do not disrupt services
+# - Follow coordinated disclosure timeline
+#
+# Response Timeline:
+# - Acknowledgment: Within 48 hours
+# - Triage: Within 1 week
+# - Fix Development: Based on severity
+# - Public Disclosure: After fix release
+#
+# Rewards:
+# We currently do not offer monetary rewards but will:
+# - Publicly acknowledge researchers (with permission)
+# - List in security advisories
+# - Include in humans.txt
+#
+# PGP Key Fingerprint:
+# 1234 5678 9ABC DEF0 1234  5678 9ABC DEF0 1234 5678
+#
+# Last Updated: 2024-11-22

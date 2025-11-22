@@ -1,0 +1,296 @@
+# humanstxt.org
+# The humans responsible for building this project
+
+/* TEAM */
+
+Project Lead: Robot Vacuum Team
+Contact: maintainers [at] robot-vacuum.example.com
+GitHub: @robot-vacuum-team
+Location: Global
+
+/* THANKS */
+
+Open Source Community
+    For providing the foundation tools and libraries this project builds upon
+
+Contributors
+    Everyone who submitted code, documentation, bug reports, or ideas
+    See: https://github.com/Hyperpolymath/robot-vacuum-cleaner/graphs/contributors
+
+Security Researchers
+    Those who responsibly disclosed vulnerabilities
+    See: SECURITY.md
+
+/* SITE */
+
+Repository: https://github.com/Hyperpolymath/robot-vacuum-cleaner
+License: MIT + Palimpsest v0.8
+Last update: 2024-11-22
+Language: Python, Rust, English
+Standards: RSR Framework, TPCF, RFC 9116
+Doctype: UTF-8
+
+/* TECHNOLOGY */
+
+Languages:
+    Python 3.11+
+    Rust (latest stable)
+    GraphQL
+    YAML
+    Shell
+    Markdown
+
+Frameworks:
+    FastAPI (Python web framework)
+    Strawberry GraphQL (GraphQL for Python)
+    NumPy (numerical computing)
+    ndarray (Rust array processing)
+
+Infrastructure:
+    Podman (containerization)
+    GitHub Actions (CI/CD)
+    GitLab CI (CI/CD mirror)
+    Prometheus (monitoring)
+    Grafana (visualization)
+    Salt (configuration management)
+
+Security:
+    Trivy (vulnerability scanning)
+    GitLeaks (secret detection)
+    Bandit (Python security)
+    Snyk (dependency scanning)
+    OWASP Dependency Check
+    Chainguard Wolfi (secure containers)
+
+Development Tools:
+    Black (Python formatter)
+    isort (import sorter)
+    rustfmt (Rust formatter)
+    Flake8 (Python linter)
+    clippy (Rust linter)
+    MyPy (type checker)
+    pytest (testing)
+    cargo test (Rust testing)
+    pre-commit (git hooks)
+
+/* COMPONENTS */
+
+Core Features:
+    - Robot vacuum simulator
+    - Path planning algorithms (A*, spiral, zigzag, wall-follow, random)
+    - SLAM (Simultaneous Localization and Mapping)
+    - GraphQL API
+    - Real-time visualization
+    - Battery management
+    - Sensor simulation
+
+Algorithms:
+    - A* pathfinding
+    - Particle filter localization
+    - Occupancy grid mapping
+    - Coverage path planning
+    - Obstacle avoidance
+
+/* FRAMEWORKS */
+
+RSR (Rhodium Standard Repository):
+    - Bronze-level compliance (target)
+    - Offline-first architecture
+    - Type safety guarantees
+    - Memory safety (Rust)
+    - Comprehensive documentation
+
+TPCF (Tri-Perimeter Contribution Framework):
+    - Perimeter 3: Community Sandbox (current)
+    - Perimeter 2: Trusted Collaborators
+    - Perimeter 1: Core Maintainers
+
+Palimpsest License v0.8:
+    - Reversibility guarantees
+    - Emotional safety provisions
+    - Attribution preservation
+    - Anti-malicious use clauses
+
+/* STANDARDS */
+
+Code Style:
+    Python: PEP 8, Black, Google docstrings
+    Rust: rustfmt, clippy
+    Commits: Conventional Commits
+    Versioning: Semantic Versioning
+
+Documentation:
+    README, CONTRIBUTING, CODE_OF_CONDUCT
+    SECURITY, MAINTAINERS, CHANGELOG
+    Inline code documentation
+    API documentation
+
+Security:
+    RFC 9116 (security.txt)
+    CVE disclosure
+    Coordinated vulnerability disclosure
+    OWASP Top 10 compliance
+
+/* ATTRIBUTION */
+
+This project uses or was inspired by:
+
+Robotics Algorithms:
+    - Probabilistic Robotics (Thrun, Burgard, Fox)
+    - A* pathfinding (Hart, Nilsson, Raphael, 1968)
+    - Particle filters (Gordon, Salmond, Smith, 1993)
+
+Path Planning:
+    - Boustrophedon coverage (Choset, 2001)
+    - Spiral coverage patterns
+    - Wall-following algorithms
+
+Container Security:
+    - Chainguard Wolfi (minimal base images)
+    - Distroless concepts
+
+Development Practices:
+    - Conventional Commits
+    - Keep a Changelog
+    - Semantic Versioning
+    - Contributor Covenant (Code of Conduct)
+
+/* DEPENDENCIES */
+
+Python:
+    - FastAPI, Strawberry GraphQL, uvicorn
+    - NumPy, SciPy, matplotlib
+    - pytest, pytest-cov, pytest-asyncio
+    - And many more (see requirements.txt)
+
+Rust:
+    - ndarray, nalgebra, rand
+    - serde, tokio, clap
+    - And more (see Cargo.toml)
+
+/* BUILD TOOLS */
+
+Package Managers:
+    - pip (Python)
+    - cargo (Rust)
+    - npm/yarn (future JavaScript)
+
+Build Systems:
+    - setuptools (Python)
+    - Cargo (Rust)
+    - just (command runner)
+    - Nix (future reproducible builds)
+
+Containers:
+    - Podman
+    - Podman Compose
+    - Chainguard images
+
+CI/CD:
+    - GitHub Actions
+    - GitLab CI
+    - pre-commit hooks
+
+/* COMMUNITY */
+
+Communication:
+    - GitHub Issues (bug reports)
+    - GitHub Discussions (questions, ideas)
+    - Pull Requests (contributions)
+    - Email (security, conduct, maintainers)
+
+Contribution Types:
+    - Code contributions
+    - Documentation improvements
+    - Bug reports and fixes
+    - Feature requests
+    - Design and UX
+    - Testing and QA
+    - Community support
+
+Recognition:
+    - Contributors list
+    - Release notes
+    - Security advisories
+    - CONTRIBUTORS.md
+    - This humans.txt
+
+/* EMOTIONAL SAFETY */
+
+This project is committed to:
+    - Welcoming all contributors
+    - Supporting mental health
+    - Respecting boundaries
+    - Enabling reversibility
+    - Encouraging experimentation
+    - Reducing contribution anxiety
+    - Celebrating all contributions
+
+See CODE_OF_CONDUCT.md for details
+
+/* LICENSES */
+
+Primary: MIT License
+    - Maximum freedom
+    - Commercial use allowed
+    - Minimal restrictions
+
+Secondary: Palimpsest License v0.8
+    - Additional ethical protections
+    - Emotional safety provisions
+    - Attribution preservation
+    - Anti-malicious use
+
+Dual licensing ensures:
+    - Ecosystem compatibility (MIT)
+    - Ethical protection (Palimpsest)
+    - Contributor rights
+    - User freedoms
+
+See LICENSE.txt for full text
+
+/* CONTACT */
+
+General: contact [at] robot-vacuum.example.com
+Security: security [at] robot-vacuum.example.com
+Conduct: conduct [at] robot-vacuum.example.com
+Maintainers: maintainers [at] robot-vacuum.example.com
+AI Policy: ai-policy [at] robot-vacuum.example.com
+
+GitHub: https://github.com/Hyperpolymath/robot-vacuum-cleaner
+Website: https://robot-vacuum.example.com (future)
+
+/* CONTRIBUTING */
+
+We welcome contributions!
+See CONTRIBUTING.md for:
+    - How to get started
+    - Development setup
+    - Code standards
+    - Pull request process
+    - Community guidelines
+
+/* SPECIAL THANKS */
+
+To everyone who:
+    - Wrote the first line of code
+    - Reported the first bug
+    - Submitted the first PR
+    - Helped others in discussions
+    - Spread the word about this project
+    - Believed in the vision
+
+Thank you! 🙏
+
+/* UPDATES */
+
+This file is updated:
+    - When new contributors join
+    - When technologies change
+    - When major milestones reached
+    - Quarterly (at minimum)
+
+Last updated: 2024-11-22
+Next review: 2025-02-22
+
+/* EOF */

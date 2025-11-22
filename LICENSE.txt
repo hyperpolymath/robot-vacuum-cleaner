@@ -1,0 +1,44 @@
+MIT License
+
+Copyright (c) 2024 Robot Vacuum Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Palimpsest License v0.8
+
+This software is also licensed under the Palimpsest License v0.8, which grants
+additional rights regarding software modification, attribution, and emotional safety.
+
+Key provisions:
+1. **Reversibility**: All changes must be reversible through version control
+2. **Emotional Safety**: Contributors have the right to withdraw contributions
+3. **Attribution Preservation**: Original authors must be credited
+4. **Modification Rights**: Derivative works must preserve these freedoms
+5. **No Malicious Use**: Software may not be used to cause harm
+
+For the complete Palimpsest License v0.8 text, see:
+https://github.com/your-org/palimpsest-license/blob/main/LICENSE-v0.8.md
+
+This dual-licensing approach ensures:
+- MIT compatibility with existing ecosystems
+- Additional emotional and ethical protections via Palimpsest
+- Maximum freedom for users and contributors
+- Protection against malicious modification

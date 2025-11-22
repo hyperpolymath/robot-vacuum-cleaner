@@ -1,0 +1,248 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- RSR Framework compliance documentation
+- Tri-Perimeter Contribution Framework (TPCF) implementation
+- Palimpsest License v0.8 integration
+- .well-known directory with security.txt, ai.txt, humans.txt
+
+### Changed
+- Updated LICENSE to dual MIT + Palimpsest v0.8
+- Enhanced CONTRIBUTING.md with TPCF guidelines
+
+### Security
+- Added RFC 9116 compliant security.txt
+- Enhanced security disclosure policy
+
+## [1.0.0] - 2024-11-22
+
+### Added
+
+#### Core Features
+- **Python Implementation**
+  - Complete robot vacuum simulator with state management
+  - Advanced path planning algorithms (A*, spiral, zigzag, wall-follow, random)
+  - SLAM implementation with particle filter and occupancy grid mapping
+  - Environment simulation with multiple room types
+  - Sensor simulation (obstacles, cliffs, bumpers)
+  - Battery management and charging dock behavior
+  - Real-time visualization with matplotlib
+
+#### GraphQL API
+  - Full-featured GraphQL API with Strawberry + FastAPI
+  - Queries for robot status, environment info, statistics
+  - Mutations for robot control (start/stop cleaning, return to dock)
+  - Subscriptions for real-time updates
+  - WebSocket support for live monitoring
+
+#### Rust Implementation
+  - High-performance Rust library
+  - Core types (Position, Velocity, Pose, SensorData)
+  - Robot module with movement and state management
+  - Environment module with grid-based representation
+  - A* pathfinding algorithm
+  - Simulator with configuration and results
+  - CLI application with clap argument parsing
+
+#### Infrastructure & DevOps
+  - **Containers**
+    - Podman containerfiles with Chainguard Wolfi base images
+    - Multi-stage builds for optimized production images
+    - Development containerfile with hot-reload
+    - Podman Compose configuration with full stack
+
+  - **CI/CD**
+    - Comprehensive GitHub Actions pipeline (30+ jobs)
+    - GitLab CI/CD mirror with parallel execution
+    - Multi-Python version testing (3.10, 3.11, 3.12)
+    - Rust testing with clippy and rustfmt
+    - Container building and scanning
+    - SonarCloud integration
+    - Codecov integration
+
+  - **Security**
+    - Trivy vulnerability scanning (filesystem and containers)
+    - GitLeaks secret detection
+    - Bandit Python security linting
+    - Snyk dependency scanning
+    - OWASP Dependency Check
+    - Grype container scanning
+    - Hadolint Dockerfile linting
+
+  - **Monitoring**
+    - Prometheus configuration with custom metrics
+    - Grafana dashboards for robot and system monitoring
+    - Alert rules for battery, errors, and system health
+    - cAdvisor for container metrics
+    - Node exporter for system metrics
+
+#### Development Tools
+  - **Git Hooks**
+    - pre-commit: Code formatting, linting, security checks
+    - pre-push: Tests, security scans, container builds
+    - commit-msg: Conventional commit validation
+    - post-merge: Dependency update notifications
+
+  - **Pre-commit Framework**
+    - 15+ integrated checks
+    - Black, isort, Flake8, Pylint, MyPy
+    - Bandit, GitLeaks, Hadolint
+    - rustfmt, clippy
+    - YAML, JSON, TOML linting
+    - Markdown linting
+    - Shell script linting
+
+  - **Salt Configuration**
+    - Minion configuration for offline development
+    - Development environment setup state
+    - CI/CD tools installation state
+    - Monitoring stack setup state
+    - Automated dependency management
+
+#### Testing
+  - **Python Tests**
+    - Comprehensive unit tests for robot, pathplanning, environment
+    - Integration tests for GraphQL API
+    - pytest configuration with 70%+ coverage requirement
+    - Fixtures and parametrized tests
+    - Test markers for organization
+
+  - **Rust Tests**
+    - Unit tests for all modules
+    - Property-based tests with proptest
+    - Benchmark tests with criterion
+
+#### Documentation
+  - Comprehensive README with installation, usage, architecture
+  - CLAUDE.md project overview
+  - Inline code documentation (docstrings and doc comments)
+  - API documentation in GraphQL schema
+  - Architecture diagrams and guides
+
+#### Configuration Files
+  - requirements.txt with pinned versions
+  - requirements-dev.txt for development dependencies
+  - pytest.ini with advanced configuration
+  - Cargo.toml with optimized build profiles
+  - .pre-commit-config.yaml with all hooks
+  - pyproject.toml for Python project metadata
+
+### Changed
+- N/A (initial release)
+
+### Deprecated
+- N/A (initial release)
+
+### Removed
+- N/A (initial release)
+
+### Fixed
+- N/A (initial release)
+
+### Security
+- Supply chain security with Chainguard Wolfi containers
+- Multi-layer security scanning in CI/CD
+- Secret detection in git hooks
+- Dependency vulnerability scanning
+- Container image signing (future)
+- SBOM generation (future)
+
+## Version Numbering
+
+This project follows [Semantic Versioning](https://semver.org/):
+
+- **MAJOR version**: Incompatible API changes
+- **MINOR version**: Backwards-compatible functionality additions
+- **PATCH version**: Backwards-compatible bug fixes
+
+### Pre-release Versions
+
+- **Alpha** (x.y.z-alpha.n): Early testing, unstable API
+- **Beta** (x.y.z-beta.n): Feature complete, API stable, bugs expected
+- **RC** (x.y.z-rc.n): Release candidate, minimal changes expected
+
+## Release Process
+
+1. **Feature Freeze**: No new features, bug fixes only
+2. **Testing**: Comprehensive testing on all platforms
+3. **Documentation**: Update README, CHANGELOG, API docs
+4. **Version Bump**: Update version in all files
+5. **Tag**: Create git tag `vX.Y.Z`
+6. **Build**: Create release artifacts
+7. **Sign**: GPG sign release artifacts
+8. **Publish**: Push to registries (PyPI, crates.io, container registry)
+9. **Announce**: Release notes, social media, mailing list
+
+## Migration Guides
+
+### Upgrading from 0.x to 1.0
+
+N/A (initial release)
+
+## Breaking Changes
+
+### 1.0.0
+- Initial stable release
+- No breaking changes (first version)
+
+## Deprecation Policy
+
+- **Deprecation Notice**: Minimum 1 minor version before removal
+- **Warning Period**: Deprecated features log warnings
+- **Migration Guide**: Provided for all breaking changes
+- **Support Window**: Deprecated features supported for 6 months
+
+## Security Advisories
+
+Security advisories are published in:
+- GitHub Security Advisories
+- SECURITY.md file
+- This CHANGELOG under relevant version
+
+### Format
+
+```
+## [X.Y.Z] - YYYY-MM-DD
+
+### Security
+- **CVE-YYYY-NNNNN**: [Severity] Description of vulnerability
+  - **Affected**: Versions x.y.z through a.b.c
+  - **Fixed**: Version X.Y.Z
+  - **Workaround**: Temporary mitigation steps
+  - **Credit**: Reporter name (if authorized)
+```
+
+## Types of Changes
+
+Changes are categorized as:
+
+- **Added**: New features
+- **Changed**: Changes in existing functionality
+- **Deprecated**: Soon-to-be removed features
+- **Removed**: Removed features
+- **Fixed**: Bug fixes
+- **Security**: Security fixes and improvements
+
+## Links
+
+- [Unreleased Changes](https://github.com/Hyperpolymath/robot-vacuum-cleaner/compare/v1.0.0...HEAD)
+- [1.0.0 Release](https://github.com/Hyperpolymath/robot-vacuum-cleaner/releases/tag/v1.0.0)
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute changes.
+
+All notable changes should be documented in this file before release.
+
+---
+
+**Format**: [Keep a Changelog](https://keepachangelog.com/)
+**Versioning**: [Semantic Versioning](https://semver.org/)
+**Last Updated**: 2024-11-22

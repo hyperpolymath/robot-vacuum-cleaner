@@ -1,0 +1,193 @@
+# AI Training and Usage Policy
+# Specification: https://site.spawning.ai/ai-txt
+
+# Summary:
+# This project allows AI training with attribution and ethical use requirements.
+
+# General AI Training
+ai-usage: allowed
+ai-training: allowed
+
+# Attribution Requirements
+attribution-required: true
+attribution-text: Robot Vacuum Cleaner Project - https://github.com/Hyperpolymath/robot-vacuum-cleaner
+attribution-notice: Please credit original authors and provide link to source repository
+
+# Commercial Use
+commercial-use: allowed-with-attribution
+
+# Derivative Works
+derivatives: allowed
+derivatives-attribution: required
+share-alike: preferred
+
+# Restrictions
+malicious-use: prohibited
+surveillance: prohibited
+weapons: prohibited
+discrimination: prohibited
+
+# Data Processing
+personal-data: none
+privacy-preserving: true
+anonymization: not-applicable
+
+# Ethical Guidelines
+#
+# Allowed Uses:
+# - Code completion and suggestions
+# - Documentation generation
+# - Test case generation
+# - Bug detection and analysis
+# - Performance optimization
+# - Educational purposes
+# - Research and academic use
+# - Open source development assistance
+#
+# Prohibited Uses:
+# - Training models for malicious purposes
+# - Surveillance or tracking systems
+# - Weapons or military applications
+# - Discriminatory decision-making systems
+# - Privacy-violating applications
+# - Plagiarism without attribution
+# - Closed-source commercial products without attribution
+#
+# Attribution Format:
+# "Based on code from Robot Vacuum Cleaner Project
+#  (https://github.com/Hyperpolymath/robot-vacuum-cleaner)
+#  Licensed under MIT + Palimpsest v0.8"
+
+# Specific AI Systems
+
+# OpenAI (ChatGPT, Codex, GPT-4)
+openai: allowed-with-attribution
+
+# GitHub Copilot
+github-copilot: allowed-with-attribution
+
+# Google (Bard, PaLM)
+google: allowed-with-attribution
+
+# Anthropic (Claude)
+anthropic: allowed-with-attribution
+
+# Meta (LLaMA)
+meta: allowed-with-attribution
+
+# Stability AI
+stability-ai: allowed-with-attribution
+
+# Hugging Face
+huggingface: allowed-with-attribution
+
+# AWS (CodeWhisperer)
+aws: allowed-with-attribution
+
+# Microsoft (Bing Chat, Azure OpenAI)
+microsoft: allowed-with-attribution
+
+# Specific Restrictions by Company
+
+# No restrictions - open to all ethical AI training
+
+# Model Types Allowed
+language-models: allowed
+code-generation: allowed
+documentation-generation: allowed
+test-generation: allowed
+bug-detection: allowed
+code-review: allowed
+refactoring-assistance: allowed
+
+# Model Types Restricted
+surveillance-models: prohibited
+facial-recognition: prohibited
+behavior-prediction: prohibited
+social-scoring: prohibited
+weapons-targeting: prohibited
+
+# Training Data Quality
+quality-assurance: required
+bias-mitigation: required
+fairness-evaluation: required
+transparency: required
+
+# Compliance
+license-compliance: required
+terms-of-service: https://github.com/Hyperpolymath/robot-vacuum-cleaner/blob/main/LICENSE.txt
+privacy-policy: https://github.com/Hyperpolymath/robot-vacuum-cleaner/blob/main/SECURITY.md
+
+# Contact
+questions: mailto:ai-policy@robot-vacuum.example.com
+concerns: mailto:conduct@robot-vacuum.example.com
+legal: mailto:legal@robot-vacuum.example.com
+
+# Palimpsest License Considerations
+#
+# This project is dual-licensed under MIT + Palimpsest v0.8.
+# AI training must respect:
+# - Attribution preservation
+# - Emotional safety provisions
+# - Reversibility principles (where applicable)
+# - Anti-malicious use clauses
+#
+# AI-generated code based on this project should:
+# - Maintain attribution in comments
+# - Preserve license headers
+# - Not be used for harmful purposes
+# - Respect original authors' rights
+
+# Version History
+version: 1.0
+last-updated: 2024-11-22
+next-review: 2025-02-22
+
+# Changelog
+# v1.0 (2024-11-22): Initial AI policy
+#   - Allow AI training with attribution
+#   - Prohibit malicious uses
+#   - Require ethical compliance
+#   - Integrate Palimpsest License considerations
+
+# Related Documents
+license: /LICENSE.txt
+code-of-conduct: /CODE_OF_CONDUCT.md
+contributing: /CONTRIBUTING.md
+security: /SECURITY.md
+
+# Research and Academic Use
+#
+# Researchers and academics are encouraged to:
+# - Use this code for AI research
+# - Publish findings openly
+# - Share improvements back to the community
+# - Cite this project in publications
+# - Follow open science principles
+#
+# Citation Format:
+# Robot Vacuum Cleaner Project. (2024).
+# High-performance robot vacuum cleaner simulator.
+# GitHub. https://github.com/Hyperpolymath/robot-vacuum-cleaner
+
+# Monitoring and Enforcement
+#
+# While we cannot actively monitor all AI training uses, we request:
+# - Voluntary compliance with these guidelines
+# - Self-reporting of non-compliant uses
+# - Community reporting of violations
+# - Good faith efforts to follow ethical principles
+#
+# Violations may result in:
+# - Request to cease and desist
+# - Public notification
+# - License termination (for severe violations)
+# - Legal action (in extreme cases)
+
+# Future Considerations
+#
+# As AI technology evolves, we will:
+# - Review and update this policy regularly
+# - Engage with AI ethics community
+# - Adapt to new use cases and concerns
+# - Maintain balance between openness and safety
