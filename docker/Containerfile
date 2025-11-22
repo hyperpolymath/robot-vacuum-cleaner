@@ -1,0 +1,59 @@
+# Multi-stage Containerfile using Chainguard Wolfi images for supply chain security
+# Wolfi is a minimal, security-focused Linux distribution with glibc and apk package manager
+
+# Stage 1: Build stage
+FROM cgr.dev/chainguard/wolfi-base:latest AS builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    python-3.11 \
+    py3.11-pip \
+    gcc \
+    g++ \
+    musl-dev \
+    python-3.11-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    rust
+
+WORKDIR /build
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Copy source code
+COPY src/ ./src/
+COPY CLAUDE.md ./
+
+# Stage 2: Runtime stage
+FROM cgr.dev/chainguard/python:latest-dev
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/app/.local/bin:$PATH" \
+    PORT=8000
+
+WORKDIR /app
+
+# Copy installed dependencies from builder
+COPY --from=builder /root/.local /app/.local
+
+# Copy application code
+COPY --from=builder /build/src ./src
+COPY --from=builder /build/CLAUDE.md ./
+
+# Create non-root user (Chainguard images are already minimal and secure)
+USER nonroot:nonroot
+
+# Expose GraphQL API port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+# Run the GraphQL server
+CMD ["python", "-m", "uvicorn", "src.graphql.server:app", "--host", "0.0.0.0", "--port", "8000"]

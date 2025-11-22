@@ -1,0 +1,393 @@
+"""
+GraphQL Schema for Robot Vacuum Cleaner API
+
+Provides comprehensive control and monitoring of the robot vacuum system.
+"""
+
+type Query {
+  """Get current robot status"""
+  robotStatus: RobotStatus!
+
+  """Get environment information"""
+  environment: EnvironmentInfo!
+
+  """Get simulation statistics"""
+  statistics: Statistics!
+
+  """Get SLAM data (if enabled)"""
+  slamData: SlamData
+
+  """Get cleaning coverage map"""
+  coverageMap: CoverageMap!
+
+  """Get available cleaning modes"""
+  availableCleaningModes: [String!]!
+
+  """Get available room types for simulation"""
+  availableRoomTypes: [String!]!
+
+  """Get path planning information"""
+  pathInfo: PathInfo
+
+  """Health check"""
+  health: HealthCheck!
+}
+
+type Mutation {
+  """Start cleaning operation"""
+  startCleaning(mode: CleaningMode): OperationResult!
+
+  """Stop cleaning operation"""
+  stopCleaning: OperationResult!
+
+  """Pause cleaning operation"""
+  pauseCleaning: OperationResult!
+
+  """Resume cleaning operation"""
+  resumeCleaning: OperationResult!
+
+  """Return robot to charging dock"""
+  returnToDock: OperationResult!
+
+  """Change cleaning mode"""
+  setCleaningMode(mode: CleaningMode!): OperationResult!
+
+  """Initialize new simulation"""
+  initSimulation(config: SimulationConfigInput!): OperationResult!
+
+  """Execute single simulation step"""
+  stepSimulation: StepResult!
+
+  """Reset simulation to initial state"""
+  resetSimulation: OperationResult!
+
+  """Move robot to specific position (manual control)"""
+  moveRobot(x: Float!, y: Float!): OperationResult!
+}
+
+type Subscription {
+  """Subscribe to robot status updates"""
+  robotStatusUpdates: RobotStatus!
+
+  """Subscribe to cleaning progress updates"""
+  cleaningProgress: CleaningProgress!
+
+  """Subscribe to simulation steps"""
+  simulationSteps: SimulationStep!
+}
+
+"""Robot operational status"""
+type RobotStatus {
+  """Current position"""
+  position: Position!
+
+  """Battery level (0-100)"""
+  batteryLevel: Float!
+
+  """Current operational state"""
+  state: RobotState!
+
+  """Current cleaning mode"""
+  mode: CleaningMode!
+
+  """Heading in degrees (0-360)"""
+  heading: Float!
+
+  """Sensor readings"""
+  sensors: SensorData!
+
+  """Operational statistics"""
+  stats: RobotStats!
+
+  """Timestamp of last update"""
+  timestamp: String!
+}
+
+"""2D Position"""
+type Position {
+  x: Float!
+  y: Float!
+}
+
+"""Robot operational state"""
+enum RobotState {
+  IDLE
+  CLEANING
+  RETURNING_TO_DOCK
+  CHARGING
+  ERROR
+  STUCK
+}
+
+"""Cleaning mode"""
+enum CleaningMode {
+  AUTO
+  SPOT
+  EDGE
+  SPIRAL
+  ZIGZAG
+  WALL_FOLLOW
+  RANDOM
+}
+
+"""Sensor readings"""
+type SensorData {
+  obstacleF ront: Boolean!
+  obstacleLeft: Boolean!
+  obstacleRight: Boolean!
+  obstacleBack: Boolean!
+  cliffDetected: Boolean!
+  bumperTriggered: Boolean!
+  distanceFront: Float!
+  distanceLeft: Float!
+  distanceRight: Float!
+  distanceBack: Float!
+}
+
+"""Robot operational statistics"""
+type RobotStats {
+  """Total distance traveled"""
+  totalDistance: Float!
+
+  """Area cleaned (number of cells)"""
+  areaCleaned: Int!
+
+  """Total cleaning time"""
+  cleaningTime: Float!
+
+  """Number of battery charge cycles"""
+  batteryCycles: Int!
+
+  """Number of errors encountered"""
+  errorsEncountered: Int!
+
+  """Number of times robot got stuck"""
+  stuckCount: Int!
+}
+
+"""Environment information"""
+type EnvironmentInfo {
+  """Environment width"""
+  width: Int!
+
+  """Environment height"""
+  height: Int!
+
+  """Total area"""
+  totalArea: Int!
+
+  """Number of free cells"""
+  freeCells: Int!
+
+  """Number of obstacle cells"""
+  obstacles: Int!
+
+  """Cleaning percentage"""
+  cleaningPercentage: Float!
+
+  """Simulation time"""
+  simTime: Float!
+
+  """Charging dock position"""
+  dockPosition: Position
+
+  """Environment type/name"""
+  roomType: String!
+}
+
+"""Simulation statistics"""
+type Statistics {
+  """Total simulation steps"""
+  steps: Int!
+
+  """Simulation success status"""
+  success: Boolean!
+
+  """Cleaning coverage percentage"""
+  cleaningCoverage: Float!
+
+  """Total distance traveled"""
+  totalDistance: Float!
+
+  """Battery cycles completed"""
+  batteryCycles: Int!
+
+  """Errors encountered"""
+  errors: Int!
+
+  """Times stuck"""
+  stuckCount: Int!
+}
+
+"""SLAM data"""
+type SlamData {
+  """Estimated robot pose"""
+  estimatedPose: Pose!
+
+  """Occupancy grid map"""
+  map: [[Int!]!]
+
+  """Sample of particle filter particles"""
+  particles: [Particle!]!
+
+  """Map dimensions"""
+  mapWidth: Int!
+  mapHeight: Int!
+}
+
+"""3D Pose (position + orientation)"""
+type Pose {
+  x: Float!
+  y: Float!
+  theta: Float!
+}
+
+"""Particle for particle filter visualization"""
+type Particle {
+  x: Float!
+  y: Float!
+  theta: Float!
+  weight: Float!
+}
+
+"""Coverage map data"""
+type CoverageMap {
+  """Map dimensions"""
+  width: Int!
+  height: Int!
+
+  """Cleaned cells"""
+  cleanedCells: [[Int!]!]!
+
+  """Visited cells"""
+  visitedCells: [[Int!]!]!
+
+  """Dirt map (1 = dirty, 0 = clean)"""
+  dirtMap: [[Int!]!]!
+
+  """Coverage percentage"""
+  coveragePercentage: Float!
+}
+
+"""Path planning information"""
+type PathInfo {
+  """Current planned path"""
+  currentPath: [Position!]!
+
+  """Path history (last 100 positions)"""
+  pathHistory: [Position!]!
+
+  """Path index (current position in path)"""
+  pathIndex: Int!
+
+  """Total path length"""
+  pathLength: Int!
+}
+
+"""Operation result"""
+type OperationResult {
+  """Operation success status"""
+  success: Boolean!
+
+  """Result message"""
+  message: String!
+
+  """Error details (if any)"""
+  error: String
+}
+
+"""Simulation step result"""
+type StepResult {
+  """Step success status"""
+  success: Boolean!
+
+  """Should simulation continue"""
+  shouldContinue: Boolean!
+
+  """Current simulation state"""
+  state: SimulationState!
+
+  """Step message"""
+  message: String
+}
+
+"""Current simulation state"""
+type SimulationState {
+  """Current step number"""
+  step: Int!
+
+  """Robot status"""
+  robot: RobotStatus!
+
+  """Environment info"""
+  environment: EnvironmentInfo!
+
+  """Cleaning percentage"""
+  cleaningPercentage: Float!
+}
+
+"""Cleaning progress update"""
+type CleaningProgress {
+  """Cleaning percentage"""
+  percentage: Float!
+
+  """Area cleaned"""
+  areaCleaned: Int!
+
+  """Battery level"""
+  batteryLevel: Float!
+
+  """Current state"""
+  state: RobotState!
+
+  """Timestamp"""
+  timestamp: String!
+}
+
+"""Simulation step update"""
+type SimulationStep {
+  """Step number"""
+  step: Int!
+
+  """Robot position"""
+  position: Position!
+
+  """Battery level"""
+  batteryLevel: Float!
+
+  """Cleaning percentage"""
+  cleaningPercentage: Float!
+}
+
+"""Health check result"""
+type HealthCheck {
+  """Service status"""
+  status: String!
+
+  """Service version"""
+  version: String!
+
+  """Uptime in seconds"""
+  uptime: Float!
+
+  """Is simulation active"""
+  simulationActive: Boolean!
+}
+
+"""Simulation configuration input"""
+input SimulationConfigInput {
+  """Room type to simulate"""
+  roomType: String
+
+  """Initial cleaning mode"""
+  cleaningMode: CleaningMode
+
+  """Maximum simulation steps"""
+  maxSteps: Int
+
+  """Enable SLAM"""
+  enableSlam: Boolean
+
+  """Random seed for reproducibility"""
+  randomSeed: Int
+}

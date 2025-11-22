@@ -1,0 +1,40 @@
+# Development Containerfile with additional tools
+FROM cgr.dev/chainguard/wolfi-base:latest
+
+# Install development dependencies
+RUN apk add --no-cache \
+    python-3.11 \
+    py3.11-pip \
+    gcc \
+    g++ \
+    musl-dev \
+    python-3.11-dev \
+    libffi-dev \
+    openssl-dev \
+    git \
+    bash \
+    curl \
+    vim \
+    postgresql-client \
+    redis
+
+WORKDIR /app
+
+# Install Python development dependencies
+COPY requirements.txt .
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
+
+# Copy source code
+COPY . .
+
+# Set environment for development
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DEVELOPMENT=1 \
+    PORT=8000
+
+EXPOSE 8000
+
+# Development command with auto-reload
+CMD ["uvicorn", "src.graphql.server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

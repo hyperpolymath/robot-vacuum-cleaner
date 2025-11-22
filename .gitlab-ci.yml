@@ -1,0 +1,520 @@
+# GitLab CI/CD Pipeline for Robot Vacuum Cleaner
+
+variables:
+  PYTHON_VERSION: "3.11"
+  RUST_VERSION: "stable"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  CARGO_HOME: "$CI_PROJECT_DIR/.cache/cargo"
+  CONTAINER_REGISTRY: $CI_REGISTRY
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE
+  TRIVY_VERSION: "latest"
+  SONAR_SCANNER_VERSION: "5.0"
+
+# Define stages
+stages:
+  - prep
+  - quality
+  - security
+  - test
+  - build
+  - scan
+  - deploy
+  - notify
+
+# Cache configuration
+cache:
+  paths:
+    - .cache/pip
+    - .cache/cargo
+    - target/
+    - htmlcov/
+
+# Default settings
+default:
+  interruptible: true
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+# ============================================================================
+# PREPARATION STAGE
+# ============================================================================
+
+install:python:
+  stage: prep
+  image: python:${PYTHON_VERSION}-slim
+  script:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+  artifacts:
+    paths:
+      - .cache/pip
+    expire_in: 1 day
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-pip
+    paths:
+      - .cache/pip
+
+# ============================================================================
+# QUALITY STAGE
+# ============================================================================
+
+format:black:
+  stage: quality
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install black
+  script:
+    - black --check src/ tests/
+  allow_failure: false
+
+format:isort:
+  stage: quality
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install isort
+  script:
+    - isort --check-only src/ tests/
+  allow_failure: false
+
+lint:flake8:
+  stage: quality
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install flake8
+  script:
+    - flake8 src/ tests/ --max-line-length=120 --extend-ignore=E203,W503 --format=json --output-file=flake8-report.json
+  artifacts:
+    reports:
+      codequality: flake8-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+lint:pylint:
+  stage: quality
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install pylint
+  script:
+    - pylint src/ --max-line-length=120 --disable=C0114,C0115,C0116 --output-format=json > pylint-report.json
+  artifacts:
+    paths:
+      - pylint-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+typecheck:mypy:
+  stage: quality
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install mypy
+  script:
+    - mypy src/ --ignore-missing-imports --junit-xml mypy-report.xml
+  artifacts:
+    reports:
+      junit: mypy-report.xml
+    expire_in: 1 week
+  allow_failure: true
+
+lint:rust:
+  stage: quality
+  image: rust:${RUST_VERSION}
+  script:
+    - cd src/rust
+    - rustup component add rustfmt clippy
+    - cargo fmt -- --check
+    - cargo clippy --all-targets --all-features -- -D warnings
+  allow_failure: true
+
+# ============================================================================
+# SECURITY STAGE
+# ============================================================================
+
+security:bandit:
+  stage: security
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install bandit
+  script:
+    - bandit -r src/ -f json -o bandit-report.json
+    - bandit -r src/ -f html -o bandit-report.html
+  artifacts:
+    paths:
+      - bandit-report.json
+      - bandit-report.html
+    expire_in: 1 week
+  allow_failure: true
+
+security:gitleaks:
+  stage: security
+  image: zricethezav/gitleaks:latest
+  script:
+    - gitleaks detect --source . --report-path gitleaks-report.json --verbose
+  artifacts:
+    paths:
+      - gitleaks-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+security:safety:
+  stage: security
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["install:python"]
+  before_script:
+    - pip install safety
+  script:
+    - safety check --json --output safety-report.json
+  artifacts:
+    paths:
+      - safety-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+security:trivy:filesystem:
+  stage: security
+  image: aquasec/trivy:${TRIVY_VERSION}
+  script:
+    - trivy filesystem --severity HIGH,CRITICAL --format json --output trivy-fs-report.json .
+    - trivy filesystem --severity HIGH,CRITICAL --format table .
+  artifacts:
+    paths:
+      - trivy-fs-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+security:dependency-check:
+  stage: security
+  image: owasp/dependency-check:latest
+  script:
+    - |
+      /usr/share/dependency-check/bin/dependency-check.sh \
+        --scan . \
+        --format ALL \
+        --out dependency-check-report \
+        --project robot-vacuum-cleaner
+  artifacts:
+    paths:
+      - dependency-check-report/
+    expire_in: 1 week
+  allow_failure: true
+
+# ============================================================================
+# TEST STAGE
+# ============================================================================
+
+test:python:3.10:
+  stage: test
+  image: python:3.10-slim
+  needs: ["install:python"]
+  script:
+    - pip install pytest pytest-cov pytest-asyncio pytest-mock
+    - pytest tests/python/ -v --cov=src/python --cov-report=xml --cov-report=html --cov-report=term --junitxml=junit-3.10.xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      junit: junit-3.10.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - htmlcov/
+      - coverage.xml
+    expire_in: 1 week
+
+test:python:3.11:
+  stage: test
+  image: python:3.11-slim
+  needs: ["install:python"]
+  script:
+    - pip install pytest pytest-cov pytest-asyncio pytest-mock
+    - pytest tests/python/ -v --cov=src/python --cov-report=xml --cov-report=html --cov-report=term --junitxml=junit-3.11.xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      junit: junit-3.11.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - htmlcov/
+      - coverage.xml
+    expire_in: 1 week
+
+test:python:3.12:
+  stage: test
+  image: python:3.12-slim
+  needs: ["install:python"]
+  script:
+    - pip install pytest pytest-cov pytest-asyncio pytest-mock
+    - pytest tests/python/ -v --cov=src/python --cov-report=xml --cov-report=html --cov-report=term --junitxml=junit-3.12.xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      junit: junit-3.12.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - htmlcov/
+      - coverage.xml
+    expire_in: 1 week
+
+test:rust:
+  stage: test
+  image: rust:${RUST_VERSION}
+  script:
+    - cd src/rust
+    - cargo test --verbose --all-features
+    - cargo install cargo-tarpaulin || true
+    - cargo tarpaulin --out Xml --output-dir coverage || true
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: src/rust/coverage/cobertura.xml
+    paths:
+      - src/rust/coverage/
+    expire_in: 1 week
+  allow_failure: true
+
+test:integration:
+  stage: test
+  image: python:${PYTHON_VERSION}-slim
+  services:
+    - name: redis:alpine
+      alias: redis
+    - name: postgres:16-alpine
+      alias: postgres
+  variables:
+    REDIS_HOST: redis
+    POSTGRES_HOST: postgres
+    POSTGRES_DB: robot_vacuum_test
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: test
+    POSTGRES_HOST_AUTH_METHOD: trust
+  needs: ["install:python"]
+  script:
+    - pip install pytest pytest-asyncio httpx
+    - pytest tests/integration/ -v --junitxml=junit-integration.xml
+  artifacts:
+    reports:
+      junit: junit-integration.xml
+    expire_in: 1 week
+
+# ============================================================================
+# BUILD STAGE
+# ============================================================================
+
+build:container:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  needs: ["test:python:3.11", "test:rust"]
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - |
+      docker build \
+        -f docker/Containerfile \
+        -t $CONTAINER_IMAGE:$CI_COMMIT_SHA \
+        -t $CONTAINER_IMAGE:$CI_COMMIT_REF_SLUG \
+        -t $CONTAINER_IMAGE:latest \
+        .
+    - docker push $CONTAINER_IMAGE:$CI_COMMIT_SHA
+    - docker push $CONTAINER_IMAGE:$CI_COMMIT_REF_SLUG
+    - docker push $CONTAINER_IMAGE:latest
+  only:
+    - main
+    - develop
+    - tags
+
+build:container:mr:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  needs: ["test:python:3.11"]
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -f docker/Containerfile -t $CONTAINER_IMAGE:mr-$CI_MERGE_REQUEST_IID .
+  only:
+    - merge_requests
+
+# ============================================================================
+# SCAN STAGE
+# ============================================================================
+
+scan:trivy:image:
+  stage: scan
+  image: aquasec/trivy:${TRIVY_VERSION}
+  needs: ["build:container"]
+  script:
+    - trivy image --severity HIGH,CRITICAL --format json --output trivy-image-report.json $CONTAINER_IMAGE:$CI_COMMIT_SHA
+    - trivy image --severity HIGH,CRITICAL --format table $CONTAINER_IMAGE:$CI_COMMIT_SHA
+  artifacts:
+    paths:
+      - trivy-image-report.json
+    expire_in: 1 week
+  allow_failure: true
+  only:
+    - main
+    - develop
+    - tags
+
+scan:grype:
+  stage: scan
+  image: anchore/grype:latest
+  needs: ["build:container"]
+  script:
+    - grype $CONTAINER_IMAGE:$CI_COMMIT_SHA --fail-on high
+  allow_failure: true
+  only:
+    - main
+    - develop
+    - tags
+
+scan:hadolint:
+  stage: scan
+  image: hadolint/hadolint:latest-alpine
+  script:
+    - hadolint docker/Containerfile --format json > hadolint-report.json
+    - hadolint docker/Containerfile
+  artifacts:
+    paths:
+      - hadolint-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+scan:sonarqube:
+  stage: scan
+  image: sonarsource/sonar-scanner-cli:${SONAR_SCANNER_VERSION}
+  needs: ["test:python:3.11"]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+  script:
+    - |
+      sonar-scanner \
+        -Dsonar.projectKey=robot-vacuum-cleaner \
+        -Dsonar.sources=src/ \
+        -Dsonar.tests=tests/ \
+        -Dsonar.python.coverage.reportPaths=coverage.xml \
+        -Dsonar.host.url=$SONAR_HOST_URL \
+        -Dsonar.login=$SONAR_TOKEN
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  allow_failure: true
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# ============================================================================
+# DEPLOY STAGE
+# ============================================================================
+
+deploy:staging:
+  stage: deploy
+  image: alpine:latest
+  needs: ["scan:trivy:image", "scan:grype"]
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - echo "Deploying to staging environment..."
+    - |
+      curl -X POST $DEPLOY_WEBHOOK_STAGING \
+        -H "Content-Type: application/json" \
+        -d "{\"image\": \"$CONTAINER_IMAGE:$CI_COMMIT_SHA\", \"environment\": \"staging\"}"
+  environment:
+    name: staging
+    url: https://staging.robot-vacuum.example.com
+    on_stop: stop:staging
+  only:
+    - develop
+
+stop:staging:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Stopping staging environment..."
+  when: manual
+  environment:
+    name: staging
+    action: stop
+  only:
+    - develop
+
+deploy:production:
+  stage: deploy
+  image: alpine:latest
+  needs: ["scan:trivy:image", "scan:grype"]
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - echo "Deploying to production environment..."
+    - |
+      curl -X POST $DEPLOY_WEBHOOK_PRODUCTION \
+        -H "Content-Type: application/json" \
+        -d "{\"image\": \"$CONTAINER_IMAGE:$CI_COMMIT_SHA\", \"environment\": \"production\"}"
+  environment:
+    name: production
+    url: https://robot-vacuum.example.com
+  when: manual
+  only:
+    - main
+    - tags
+
+# ============================================================================
+# NOTIFY STAGE
+# ============================================================================
+
+notify:success:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      curl -X POST $SLACK_WEBHOOK_URL \
+        -H 'Content-Type: application/json' \
+        -d "{\"text\": \"✅ Pipeline succeeded for $CI_PROJECT_NAME - $CI_COMMIT_REF_NAME\"}"
+  when: on_success
+  only:
+    - main
+    - develop
+
+notify:failure:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      curl -X POST $SLACK_WEBHOOK_URL \
+        -H 'Content-Type: application/json' \
+        -d "{\"text\": \"❌ Pipeline failed for $CI_PROJECT_NAME - $CI_COMMIT_REF_NAME\nJob: $CI_JOB_NAME\nCommit: $CI_COMMIT_SHA\"}"
+  when: on_failure
+  only:
+    - main
+    - develop
+
+# ============================================================================
+# SCHEDULED JOBS
+# ============================================================================
+
+security:scheduled:scan:
+  stage: security
+  image: aquasec/trivy:${TRIVY_VERSION}
+  script:
+    - trivy image --severity HIGH,CRITICAL $CONTAINER_IMAGE:latest
+  only:
+    - schedules
+  allow_failure: true

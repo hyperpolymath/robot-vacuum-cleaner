@@ -1,0 +1,190 @@
+# Podman Compose configuration for Robot Vacuum Cleaner system
+version: '3.8'
+
+services:
+  # Main GraphQL API service
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Containerfile
+    container_name: robot-vacuum-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - robot-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development API with hot reload
+  api-dev:
+    build:
+      context: ..
+      dockerfile: docker/Containerfile.dev
+    container_name: robot-vacuum-api-dev
+    ports:
+      - "8001:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DEVELOPMENT=1
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ../src:/app/src:z
+      - ../tests:/app/tests:z
+    networks:
+      - robot-network
+    profiles:
+      - dev
+
+  # Redis for caching and session management
+  redis:
+    image: cgr.dev/chainguard/redis:latest
+    container_name: robot-vacuum-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - robot-network
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data:z
+
+  # PostgreSQL for persistent data storage
+  postgres:
+    image: cgr.dev/chainguard/postgres:latest
+    container_name: robot-vacuum-postgres
+    environment:
+      - POSTGRES_DB=robot_vacuum
+      - POSTGRES_USER=robot
+      - POSTGRES_PASSWORD=vacuum123
+    ports:
+      - "5432:5432"
+    networks:
+      - robot-network
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U robot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: cgr.dev/chainguard/prometheus:latest
+    container_name: robot-vacuum-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:z,ro
+      - prometheus-data:/prometheus:z
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - robot-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana for metrics visualization
+  grafana:
+    image: cgr.dev/chainguard/grafana:latest
+    container_name: robot-vacuum-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana:z
+      - ../monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:z,ro
+      - ../monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:z,ro
+    networks:
+      - robot-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Trivy scanner for vulnerability scanning
+  trivy:
+    image: aquasec/trivy:latest
+    container_name: robot-vacuum-trivy
+    volumes:
+      - /var/run/podman/podman.sock:/var/run/docker.sock:z,ro
+      - trivy-cache:/root/.cache:z
+    networks:
+      - robot-network
+    profiles:
+      - security
+    command: ["image", "--severity", "HIGH,CRITICAL", "robot-vacuum-api"]
+
+  # SonarQube for code quality analysis
+  sonarqube:
+    image: sonarqube:community
+    container_name: robot-vacuum-sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonarqube
+      - SONAR_JDBC_USERNAME=robot
+      - SONAR_JDBC_PASSWORD=vacuum123
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data:z
+      - sonarqube-extensions:/opt/sonarqube/extensions:z
+      - sonarqube-logs:/opt/sonarqube/logs:z
+    networks:
+      - robot-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    profiles:
+      - quality
+
+  # Nginx reverse proxy
+  nginx:
+    image: cgr.dev/chainguard/nginx:latest
+    container_name: robot-vacuum-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:z,ro
+      - ../nginx/ssl:/etc/nginx/ssl:z,ro
+    networks:
+      - robot-network
+    depends_on:
+      - api
+    restart: unless-stopped
+    profiles:
+      - production
+
+networks:
+  robot-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+  trivy-cache:
+  sonarqube-data:
+  sonarqube-extensions:
+  sonarqube-logs:
