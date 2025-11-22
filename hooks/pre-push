@@ -1,0 +1,158 @@
+#!/bin/bash
+# Pre-push hook for Robot Vacuum Cleaner project
+# Runs tests and security scans before pushing
+
+set -e
+
+echo "🚀 Running pre-push checks..."
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Check if we're in the right directory
+if [ ! -f "requirements.txt" ]; then
+    echo -e "${RED}❌ Error: Must be run from project root${NC}"
+    exit 1
+fi
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Get current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo -e "${YELLOW}Branch: $CURRENT_BRANCH${NC}"
+
+# Prevent pushing to protected branches directly
+if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+    echo -e "${RED}❌ Direct push to $CURRENT_BRANCH is not allowed${NC}"
+    echo "Please create a pull request instead"
+    exit 1
+fi
+
+# 1. Run Python tests
+echo "🧪 Running Python tests..."
+if command_exists pytest; then
+    if [ -d "tests/python" ]; then
+        if ! pytest tests/python/ -v --tb=short --maxfail=5; then
+            echo -e "${RED}❌ Python tests failed${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}✓ Python tests passed${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠ pytest not found, skipping Python tests${NC}"
+fi
+
+# 2. Run Rust tests
+echo "🦀 Running Rust tests..."
+if command_exists cargo; then
+    if [ -d "src/rust" ]; then
+        cd src/rust
+        if ! cargo test; then
+            echo -e "${RED}❌ Rust tests failed${NC}"
+            exit 1
+        fi
+        cd ../..
+        echo -e "${GREEN}✓ Rust tests passed${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠ cargo not found, skipping Rust tests${NC}"
+fi
+
+# 3. Security scan with Trivy (if available)
+echo "🔒 Running security scan..."
+if command_exists trivy; then
+    if ! trivy fs --severity HIGH,CRITICAL --exit-code 1 .; then
+        echo -e "${RED}❌ Security vulnerabilities found${NC}"
+        echo "Run 'trivy fs .' for details"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Security scan passed${NC}"
+else
+    echo -e "${YELLOW}⚠ trivy not found, skipping security scan${NC}"
+fi
+
+# 4. Check for secrets
+echo "🔐 Checking for secrets..."
+if command_exists gitleaks; then
+    if ! gitleaks detect --verbose; then
+        echo -e "${RED}❌ Potential secrets found${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ No secrets detected${NC}"
+else
+    echo -e "${YELLOW}⚠ gitleaks not found, skipping secrets detection${NC}"
+fi
+
+# 5. Build container image (if Containerfile exists)
+echo "🐳 Checking container build..."
+if [ -f "docker/Containerfile" ]; then
+    if command_exists podman; then
+        echo "Building container image..."
+        if ! podman build -f docker/Containerfile -t robot-vacuum-test:latest . --quiet; then
+            echo -e "${RED}❌ Container build failed${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}✓ Container build OK${NC}"
+    elif command_exists docker; then
+        echo "Building container image..."
+        if ! docker build -f docker/Containerfile -t robot-vacuum-test:latest . --quiet; then
+            echo -e "${RED}❌ Container build failed${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}✓ Container build OK${NC}"
+    else
+        echo -e "${YELLOW}⚠ No container runtime found, skipping build${NC}"
+    fi
+fi
+
+# 6. Check branch naming convention for claude branches
+if [[ $CURRENT_BRANCH == claude/* ]]; then
+    # Extract session ID from branch name
+    if [[ ! $CURRENT_BRANCH =~ claude/.*-[0-9A-Za-z]{26}$ ]]; then
+        echo -e "${RED}❌ Claude branch must end with session ID${NC}"
+        echo "Format: claude/<description>-<session-id>"
+        exit 1
+    fi
+fi
+
+# 7. Lint Containerfile
+if [ -f "docker/Containerfile" ]; then
+    if command_exists hadolint; then
+        echo "🔍 Linting Containerfile..."
+        if ! hadolint docker/Containerfile; then
+            echo -e "${YELLOW}⚠ Containerfile linting warnings${NC}"
+        else
+            echo -e "${GREEN}✓ Containerfile OK${NC}"
+        fi
+    fi
+fi
+
+# 8. Check for uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo -e "${RED}❌ You have uncommitted changes${NC}"
+    echo "Please commit or stash them before pushing"
+    exit 1
+fi
+
+# 9. Verify Salt states syntax (if available)
+if [ -d "salt/states" ] && command_exists salt-call; then
+    echo "🧂 Checking Salt states..."
+    for state_file in salt/states/*.sls; do
+        if [ -f "$state_file" ]; then
+            if ! salt-call --local state.show_sls "$(basename $state_file .sls)" --out=quiet; then
+                echo -e "${YELLOW}⚠ Salt state syntax warning: $state_file${NC}"
+            fi
+        fi
+    done
+    echo -e "${GREEN}✓ Salt states OK${NC}"
+fi
+
+echo -e "${GREEN}✅ All pre-push checks passed!${NC}"
+echo "Pushing to remote..."
+exit 0

@@ -1,0 +1,135 @@
+#!/bin/bash
+# Commit message hook for Robot Vacuum Cleaner project
+# Validates commit message format
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo "📝 Validating commit message..."
+
+# Get the first line of the commit message
+FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+
+# Check minimum length
+if [ ${#FIRST_LINE} -lt 10 ]; then
+    echo -e "${RED}❌ Commit message too short (minimum 10 characters)${NC}"
+    echo "Current length: ${#FIRST_LINE}"
+    exit 1
+fi
+
+# Check maximum length for first line
+if [ ${#FIRST_LINE} -gt 100 ]; then
+    echo -e "${RED}❌ Commit message first line too long (maximum 100 characters)${NC}"
+    echo "Current length: ${#FIRST_LINE}"
+    echo "Consider using the commit body for detailed descriptions"
+    exit 1
+fi
+
+# Check for conventional commits format
+CONVENTIONAL_COMMIT_REGEX="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+"
+
+if ! echo "$FIRST_LINE" | grep -qE "$CONVENTIONAL_COMMIT_REGEX"; then
+    echo -e "${YELLOW}⚠ Commit message doesn't follow Conventional Commits format${NC}"
+    echo ""
+    echo "Expected format: <type>(<scope>): <description>"
+    echo ""
+    echo "Types:"
+    echo "  feat:     A new feature"
+    echo "  fix:      A bug fix"
+    echo "  docs:     Documentation changes"
+    echo "  style:    Code style changes (formatting, etc.)"
+    echo "  refactor: Code refactoring"
+    echo "  test:     Adding or updating tests"
+    echo "  chore:    Maintenance tasks"
+    echo "  perf:     Performance improvements"
+    echo "  ci:       CI/CD changes"
+    echo "  build:    Build system changes"
+    echo "  revert:   Reverting a previous commit"
+    echo ""
+    echo "Examples:"
+    echo "  feat(api): add GraphQL subscription for robot status"
+    echo "  fix(pathfinding): correct A* heuristic calculation"
+    echo "  docs(readme): update installation instructions"
+    echo "  test(slam): add unit tests for particle filter"
+    echo ""
+    echo "Your message: $FIRST_LINE"
+    echo ""
+
+    # Allow bypass with --no-verify, but warn
+    echo -e "${YELLOW}⚠ Commit message format warning (continuing anyway)${NC}"
+    echo "Use --no-verify to skip this check, or amend your commit message"
+fi
+
+# Check for imperative mood (common words that indicate wrong tense)
+WRONG_TENSE_WORDS="added|adding|fixed|fixing|updated|updating|changed|changing|created|creating"
+if echo "$FIRST_LINE" | grep -qiE ": ($WRONG_TENSE_WORDS)"; then
+    echo -e "${YELLOW}⚠ Use imperative mood in commit messages (e.g., 'add' not 'added')${NC}"
+fi
+
+# Check for capitalization of description
+DESCRIPTION=$(echo "$FIRST_LINE" | sed -E 's/^[^:]+: //')
+FIRST_CHAR=$(echo "$DESCRIPTION" | cut -c1)
+if [ "$FIRST_CHAR" != "$(echo $FIRST_CHAR | tr '[:lower:]' '[:upper:]')" ]; then
+    if [ "$FIRST_CHAR" != "#" ]; then  # Allow issue references
+        echo -e "${YELLOW}⚠ Commit description should start with a capital letter${NC}"
+    fi
+fi
+
+# Check for period at end
+if echo "$FIRST_LINE" | grep -q "\.$"; then
+    echo -e "${YELLOW}⚠ Don't end commit message with a period${NC}"
+fi
+
+# Warn about WIP commits
+if echo "$FIRST_LINE" | grep -qi "WIP\|work in progress"; then
+    echo -e "${YELLOW}⚠ WIP commit detected${NC}"
+    echo "Remember to squash or reword before merging"
+fi
+
+# Check for common typos
+if echo "$COMMIT_MSG" | grep -qi "teh\|recieve\|occured\|seperate"; then
+    echo -e "${YELLOW}⚠ Possible typo detected in commit message${NC}"
+fi
+
+# Check for issue/ticket references (informational)
+if ! echo "$COMMIT_MSG" | grep -qiE "(#[0-9]+|JIRA-[0-9]+|closes|fixes|resolves)"; then
+    echo -e "${YELLOW}ℹ No issue reference found (consider adding #issue-number)${NC}"
+fi
+
+# Validate breaking change format
+if echo "$COMMIT_MSG" | grep -qi "BREAKING CHANGE"; then
+    if ! echo "$COMMIT_MSG" | grep -q "BREAKING CHANGE:"; then
+        echo -e "${RED}❌ BREAKING CHANGE must be followed by a colon${NC}"
+        exit 1
+    fi
+    echo -e "${YELLOW}⚠ BREAKING CHANGE detected - make sure this is intentional${NC}"
+fi
+
+# Check for merge commits
+if echo "$FIRST_LINE" | grep -q "^Merge"; then
+    echo -e "${GREEN}✓ Merge commit detected${NC}"
+    exit 0
+fi
+
+# Check for revert commits
+if echo "$FIRST_LINE" | grep -q "^Revert"; then
+    if ! echo "$COMMIT_MSG" | grep -q "This reverts commit"; then
+        echo -e "${YELLOW}⚠ Revert commit should reference the reverted commit${NC}"
+    fi
+fi
+
+# Success message
+echo -e "${GREEN}✓ Commit message format OK${NC}"
+
+# Add commit info
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
+echo -e "${GREEN}Branch: $CURRENT_BRANCH | Commits: $COMMIT_COUNT${NC}"
+
+exit 0
