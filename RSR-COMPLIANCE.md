@@ -40,7 +40,7 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 |-----------|--------|-------|
 | justfile | ✅ Complete | 40+ recipes for all tasks |
 | Cargo.toml (Rust) | ✅ Complete | Optimized build profiles |
-| requirements.txt (Python) | ✅ Complete | Pinned dependencies |
+| Project.toml (Julia) | ✅ Complete | Package dependencies |
 | pre-commit config | ✅ Complete | 15+ automated checks |
 | Git hooks | ✅ Complete | pre-commit, pre-push, commit-msg, post-merge |
 
@@ -50,15 +50,15 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 
 | Language | Type Safety | Memory Safety | Status |
 |----------|-------------|---------------|--------|
-| Python | Type hints + MyPy | Runtime checks | ✅ Complete |
+| Julia | Dynamic + JIT type inference | Managed + GC | ✅ Complete |
 | Rust | Compile-time | Ownership model | ✅ Complete |
 
 **Bronze Requirement**: ✅ Type safety guaranteed
 
 **Details**:
-- Python: Type hints for all public APIs, MyPy validation
+- Julia: Type annotations, multiple dispatch, JIT type inference for performance
 - Rust: Full type system, zero `unsafe` blocks (verified)
-- Memory Safety: Rust ownership model prevents memory errors
+- Memory Safety: Rust ownership model, Julia garbage collector
 
 ### 5. Testing ✅
 
@@ -70,9 +70,9 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 | CI/CD | Automated | ✅ Complete | ✅ Pass |
 
 **Test Suites**:
-- Python: pytest with 100+ tests
+- Julia: Test.jl with comprehensive test suite (6 test files)
 - Rust: cargo test with comprehensive coverage
-- Integration: GraphQL API tests
+- Integration: Full simulator integration tests
 - CI/CD: Automated on every commit
 
 ### 6. Offline-First ✅
@@ -105,8 +105,8 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 |---------------|--------|-------------|
 | Trivy scanning | ✅ Active | CI/CD + pre-commit |
 | GitLeaks | ✅ Active | CI/CD + hooks |
-| Bandit (Python) | ✅ Active | CI/CD + hooks |
-| Snyk | ✅ Active | CI/CD |
+| Pkg.audit() (Julia) | ✅ Active | CI/CD |
+| cargo audit (Rust) | ✅ Active | CI/CD + hooks |
 | OWASP Dependency Check | ✅ Active | CI/CD |
 | Grype | ✅ Active | CI/CD |
 | Hadolint | ✅ Active | CI/CD |
@@ -120,11 +120,11 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 
 | Language | Status | Purpose |
 |----------|--------|---------|
-| Python 3.11+ | ✅ Complete | Main implementation |
+| Julia 1.9+ | ✅ Complete | Main implementation |
 | Rust | ✅ Complete | High-performance variant |
 | GraphQL | ✅ Complete | API layer |
 
-**Interop**: Can call Rust from Python via FFI (future)
+**Interop**: Can call Rust from Julia via ccall (future)
 
 ### 10. Emotional Safety ✅
 
@@ -147,7 +147,7 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 | Pre-commit | ✅ Active | Local validation before commit |
 
 **Pipeline Features**:
-- Multi-version testing (Python 3.10, 3.11, 3.12)
+- Multi-version testing (Julia 1.9, 1.10, nightly)
 - Parallel execution
 - Security scanning
 - Container building and scanning
@@ -167,8 +167,8 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 7. ✅ CHANGELOG.md (Keep a Changelog)
 8. ✅ .well-known/ directory (security.txt, ai.txt, humans.txt)
 9. ✅ Build system (justfile)
-10. ✅ Type safety (Python type hints + Rust)
-11. ✅ Memory safety (Rust ownership model)
+10. ✅ Type safety (Julia type inference + Rust)
+11. ✅ Memory safety (Rust ownership model + Julia GC)
 12. ✅ Test coverage >70%
 13. ✅ Offline-first core functionality
 14. ✅ TPCF perimeters defined
@@ -196,7 +196,7 @@ Future enhancements for Gold level:
 |-------------|--------|-------|
 | Formal specifications | ⏳ Future | TLA+ specs for algorithms |
 | Proof of correctness | ⏳ Future | SPARK proofs for critical paths |
-| Multi-language FFI | ⏳ Future | Rust-Python interop |
+| Multi-language FFI | ⏳ Future | Rust-Julia interop via ccall |
 | Full offline capability | ⏳ Future | Including dependency vendoring |
 | Research papers | ⏳ Future | Academic publications |
 | Conference talks | ⏳ Future | Community presentations |

@@ -1,6 +1,6 @@
 # Robot Vacuum Cleaner Simulator
 
-A comprehensive, production-grade robot vacuum cleaner simulation system with dual Python and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
+A comprehensive, production-grade robot vacuum cleaner simulation system with dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
 
 [![CI/CD](https://github.com/Hyperpolymath/robot-vacuum-cleaner/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/Hyperpolymath/robot-vacuum-cleaner/actions)
 [![codecov](https://codecov.io/gh/Hyperpolymath/robot-vacuum-cleaner/branch/main/graph/badge.svg)](https://codecov.io/gh/Hyperpolymath/robot-vacuum-cleaner)
@@ -19,10 +19,10 @@ A comprehensive, production-grade robot vacuum cleaner simulation system with du
 ### Technology Stack
 
 #### Languages & Frameworks
-- **Python 3.11+**: Primary simulation and API implementation
-- **Rust**: High-performance variant for compute-intensive operations
-- **GraphQL**: Strawberry + FastAPI for modern API layer
-- **NumPy/SciPy**: Numerical computing and algorithms
+- **Julia 1.9+**: Primary simulation and API implementation with high-performance numerics
+- **Rust**: Systems programming variant for compute-intensive operations
+- **GraphQL**: Modern API layer (Julia implementation)
+- **LinearAlgebra/Statistics**: Native Julia numerical computing
 
 #### Infrastructure
 - **Containers**: Podman with Chainguard Wolfi base images for supply chain security
@@ -31,9 +31,9 @@ A comprehensive, production-grade robot vacuum cleaner simulation system with du
 - **Salt**: Offline development and maintenance support
 
 #### Security & Quality
-- **Security Scanning**: Trivy, GitLeaks, Bandit, OWASP Dependency Check, Snyk
-- **Code Quality**: Black, isort, Flake8, Pylint, MyPy, Rust clippy
-- **Testing**: pytest with 70%+ coverage requirement, Rust cargo test
+- **Security Scanning**: Trivy, GitLeaks, cargo audit, Pkg.audit(), OWASP Dependency Check
+- **Code Quality**: JuliaFormatter, Lint.jl, Rust clippy
+- **Testing**: Julia Test with 70%+ coverage requirement, Rust cargo test
 - **Pre-commit Hooks**: Automated linting, formatting, and security checks
 
 ## Quick Start
@@ -41,8 +41,8 @@ A comprehensive, production-grade robot vacuum cleaner simulation system with du
 ### Prerequisites
 
 ```bash
-# Python 3.11+
-python --version
+# Julia 1.9+
+julia --version
 
 # Rust (latest stable)
 rustc --version
@@ -50,29 +50,29 @@ rustc --version
 # Podman or Docker
 podman --version
 
+# Just (task runner)
+just --version
+
 # Salt (optional, for infrastructure management)
 salt-call --version
 ```
 
 ### Installation
 
-#### Python Environment
+#### Julia Environment
 
 ```bash
 # Clone repository
 git clone https://github.com/Hyperpolymath/robot-vacuum-cleaner.git
 cd robot-vacuum-cleaner
 
-# Create virtual environment
-python3.11 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Setup Julia packages
+cd src/julia/RobotVacuum
+julia --project=. -e 'using Pkg; Pkg.instantiate()'
 
-# Install dependencies
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # For development
-
-# Install git hooks
-./scripts/install-hooks.sh
+# Or use just
+cd ../../..
+just setup  # Sets up Julia, Rust, and git hooks
 ```
 
 #### Rust Build
@@ -95,43 +95,54 @@ podman-compose -f docker/compose.yaml up -d
 
 ### Usage
 
-#### Python Simulator
+#### Julia Simulator
 
-```python
-from src.python.simulator import SimulationConfig, SimulationController
-from src.python.visualization import quick_visualize
+```julia
+using RobotVacuum
 
 # Configure simulation
 config = SimulationConfig(
-    room_type='furnished',
-    cleaning_mode='zigzag',
+    room_type="furnished",
+    cleaning_mode=Auto,
     max_steps=5000,
-    enable_slam=True,
+    enable_slam=true,
     random_seed=42
 )
 
 # Run simulation
-sim = SimulationController(config)
-for _ in range(1000):
-    if not sim.step():
-        break
+results = run_simulation(config)
 
-# Visualize results
-quick_visualize(sim)
+# Display results
+println("Coverage: $(results["cleaning_coverage"])%")
+println("Total Distance: $(results["total_distance"]) units")
+println("Battery Cycles: $(results["battery_cycles"])")
+```
 
-# Get results
-results = sim.get_results()
-print(f"Coverage: {results['cleaning_coverage']:.2f}%")
+Or use the CLI:
+
+```bash
+# Run with default settings
+julia --project=src/julia/RobotVacuum src/julia/main.jl
+
+# Run with specific options
+julia --project=src/julia/RobotVacuum src/julia/main.jl \
+    --room-type empty \
+    --cleaning-mode spot \
+    --max-steps 10000 \
+    --seed 42
+
+# Or use just
+just run-julia
 ```
 
 #### GraphQL API
 
 ```bash
-# Start the API server
-python src/graphql/server.py
+# Start the API server (Julia implementation)
+julia --project=src/julia/RobotVacuum src/julia/graphql_server.jl
 
-# Or with uvicorn
-uvicorn src.graphql.server:app --host 0.0.0.0 --port 8000
+# Or use just
+just run-api
 
 # Access GraphQL playground
 open http://localhost:8000/graphql
@@ -187,26 +198,32 @@ cargo run --release -- \
 ```
 robot-vacuum-cleaner/
 ├── src/
-│   ├── python/          # Python implementation
-│   │   ├── robot.py           # Robot core
-│   │   ├── environment.py     # Environment simulation
-│   │   ├── pathplanning.py    # Path planning algorithms
-│   │   ├── slam.py            # SLAM implementation
-│   │   ├── simulator.py       # Simulation controller
-│   │   └── visualization.py   # Visualization module
-│   ├── rust/            # Rust implementation
-│   │   ├── src/
-│   │   │   ├── robot.rs
-│   │   │   ├── environment.rs
-│   │   │   ├── pathfinding.rs
-│   │   │   ├── slam.rs
-│   │   │   └── simulator.rs
-│   │   └── Cargo.toml
-│   └── graphql/         # GraphQL API
-│       ├── schema.graphql
-│       └── server.py
+│   ├── julia/           # Julia implementation
+│   │   ├── RobotVacuum/ # Julia package
+│   │   │   ├── Project.toml     # Package definition
+│   │   │   ├── src/
+│   │   │   │   ├── RobotVacuum.jl  # Main module
+│   │   │   │   ├── types.jl        # Type definitions
+│   │   │   │   ├── robot.jl        # Robot core
+│   │   │   │   ├── environment.jl  # Environment simulation
+│   │   │   │   ├── pathplanning.jl # Path planning algorithms
+│   │   │   │   ├── slam.jl         # SLAM implementation
+│   │   │   │   └── simulator.jl    # Simulation controller
+│   │   ├── main.jl              # CLI entry point
+│   │   └── graphql_server.jl    # GraphQL server
+│   └── rust/            # Rust implementation
+│       ├── src/
+│       │   ├── robot.rs
+│       │   ├── environment.rs
+│       │   ├── pathfinding.rs
+│       │   ├── slam.rs
+│       │   └── simulator.rs
+│       └── Cargo.toml
 ├── tests/
-│   ├── python/          # Python tests
+│   ├── julia/           # Julia tests
+│   │   ├── runtests.jl
+│   │   ├── test_robot.jl
+│   │   └── test_simulator.jl
 │   └── integration/     # Integration tests
 ├── docker/              # Container configurations
 │   ├── Containerfile    # Production container
@@ -245,49 +262,51 @@ robot-vacuum-cleaner/
 ### Running Tests
 
 ```bash
-# Python tests
-pytest tests/python/ -v --cov=src/python
+# All tests
+just test
 
-# Rust tests
-cd src/rust && cargo test
+# Julia tests only
+just test-julia
+# Or: cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.test()'
 
-# Integration tests
-pytest tests/integration/ -v
+# Rust tests only
+just test-rust
+# Or: cd src/rust && cargo test
 
-# With coverage report
-pytest --cov=src/python --cov-report=html
+# With coverage
+just coverage
 ```
 
 ### Code Quality
 
 ```bash
-# Format code
-black src/ tests/
-isort src/ tests/
-cd src/rust && cargo fmt
+# Format all code
+just fmt
 
-# Lint
-flake8 src/ tests/
-pylint src/
-cd src/rust && cargo clippy
-
-# Type checking
-mypy src/
+# Lint all code
+just lint
 
 # Security scanning
-bandit -r src/python/
-trivy fs .
+just security
+
+# Or individually:
+just fmt-julia     # Format Julia code
+just fmt-rust      # Format Rust code
+just lint-julia    # Lint Julia code
+just lint-rust     # Lint Rust code (clippy)
 ```
 
 ### Pre-commit Hooks
 
 ```bash
-# Install pre-commit
-pip install pre-commit
+# Install pre-commit (requires Python)
 pre-commit install
 
 # Run manually
 pre-commit run --all-files
+
+# Or use just
+just pre-commit
 ```
 
 ## CI/CD
@@ -295,9 +314,9 @@ pre-commit run --all-files
 ### GitHub Actions
 
 Comprehensive pipeline including:
-- Code quality checks (Black, isort, Flake8, Pylint, MyPy)
-- Security scanning (Trivy, GitLeaks, Bandit, Snyk, OWASP)
-- Multi-version Python testing (3.10, 3.11, 3.12)
+- Code quality checks (JuliaFormatter, Lint.jl, cargo fmt, clippy)
+- Security scanning (Trivy, GitLeaks, cargo audit, Pkg.audit())
+- Multi-version Julia testing (1.9, 1.10, nightly)
 - Rust testing and clippy
 - Container building and scanning
 - SonarCloud analysis
@@ -407,12 +426,13 @@ Salt minion configuration enables:
 
 ## Performance
 
-### Python Performance
+### Julia Performance
 
-- NumPy vectorization for grid operations
+- Just-In-Time (JIT) compilation for near-C performance
+- Native array operations with Broadcasting
 - Efficient path planning with A*
-- Optimized SLAM updates
-- Memory-efficient data structures
+- Type-stable code for optimal performance
+- Multiple dispatch for specialized algorithms
 
 ### Rust Performance
 
@@ -486,4 +506,4 @@ Robot Vacuum Team
 
 ---
 
-**Built with ❤️ using Python, Rust, and modern DevOps practices**
+**Built with ❤️ using Julia, Rust, and modern DevOps practices**

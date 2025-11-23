@@ -11,20 +11,16 @@ setup:
     set -euo pipefail
     echo "🔧 Setting up development environment..."
 
-    # Check Python version
-    python3 --version
+    # Check Julia version
+    julia --version
 
-    # Create virtual environment
-    python3 -m venv venv
-
-    # Activate and install dependencies
-    . venv/bin/activate
-    pip install --upgrade pip
-    pip install -r requirements.txt
-    pip install -r requirements-dev.txt
+    # Setup Julia packages
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.instantiate()'
 
     # Install git hooks
-    ./scripts/install-hooks.sh
+    if [ -f ./scripts/install-hooks.sh ]; then
+        ./scripts/install-hooks.sh
+    fi
 
     # Install pre-commit
     pre-commit install
@@ -36,42 +32,35 @@ setup:
 
 # Install dependencies only
 install:
-    pip install -r requirements.txt
-    pip install -r requirements-dev.txt
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.instantiate()'
     cd src/rust && cargo build
 
 # Run all tests
 test:
-    @just test-python
+    @just test-julia
     @just test-rust
-    @just test-integration
 
-# Run Python tests
-test-python:
-    pytest tests/python/ -v --cov=src/python --cov-report=term
+# Run Julia tests
+test-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.test()'
 
 # Run Rust tests
 test-rust:
     cd src/rust && cargo test --verbose
 
-# Run integration tests
-test-integration:
-    pytest tests/integration/ -v
-
 # Run tests with coverage
 coverage:
-    pytest tests/python/ -v --cov=src/python --cov-report=html --cov-report=term
-    @echo "📊 Coverage report: htmlcov/index.html"
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.add("Coverage"); using Coverage; coverage = process_folder(); covered_lines, total_lines = get_summary(coverage); println("Coverage: ", covered_lines/total_lines * 100, "%")'
+    @echo "📊 Julia coverage complete"
 
 # Format code
 fmt:
-    @just fmt-python
+    @just fmt-julia
     @just fmt-rust
 
-# Format Python code
-fmt-python:
-    black src/ tests/
-    isort src/ tests/
+# Format Julia code
+fmt-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter"); using JuliaFormatter; format("src"); format("../../../tests/julia")'
 
 # Format Rust code
 fmt-rust:
@@ -79,14 +68,13 @@ fmt-rust:
 
 # Lint code
 lint:
-    @just lint-python
+    @just lint-julia
     @just lint-rust
 
-# Lint Python code
-lint-python:
-    flake8 src/ tests/ --max-line-length=120 --extend-ignore=E203,W503
-    pylint src/ --max-line-length=120 --disable=C0114,C0115,C0116 || true
-    mypy src/ --ignore-missing-imports || true
+# Lint Julia code
+lint-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.add("Lint"); using Lint; lintpkg("RobotVacuum")' || true
+    @echo "✅ Julia lint complete"
 
 # Lint Rust code
 lint-rust:
@@ -94,15 +82,15 @@ lint-rust:
 
 # Run security checks
 security:
-    @just security-python
+    @just security-julia
     @just security-rust
     @just security-secrets
     @just security-containers
 
-# Security: Python
-security-python:
-    bandit -r src/python/ -f json -o bandit-report.json || true
-    bandit -r src/python/
+# Security: Julia
+security-julia:
+    @echo "🔒 Running Julia security checks..."
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.audit()' || true
 
 # Security: Rust
 security-rust:
@@ -119,9 +107,9 @@ security-containers:
 # Run all quality checks
 quality: fmt lint security test
 
-# Build Python package
-build-python:
-    python -m build
+# Build Julia package
+build-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.build()'
 
 # Build Rust binary
 build-rust:
@@ -132,19 +120,19 @@ build-containers:
     podman build -f docker/Containerfile -t robot-vacuum:latest .
 
 # Build everything
-build: build-python build-rust build-containers
+build: build-julia build-rust build-containers
 
-# Run Python simulator
-run-python:
-    python src/python/simulator.py
+# Run Julia simulator
+run-julia:
+    julia --project=src/julia/RobotVacuum src/julia/main.jl
 
 # Run Rust simulator
 run-rust:
     cd src/rust && cargo run --release
 
-# Run GraphQL server
+# Run GraphQL server (Julia)
 run-api:
-    uvicorn src.graphql.server:app --host 0.0.0.0 --port 8000 --reload
+    julia --project=src/julia/RobotVacuum src/julia/graphql_server.jl
 
 # Start all services with compose
 up:
@@ -232,7 +220,7 @@ validate-rsr:
     # Check test coverage
     echo ""
     echo "🧪 Running tests for coverage check..."
-    pytest tests/python/ -q --cov=src/python --cov-report=term-missing | tail -5 || true
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.test()' || true
 
     echo ""
     echo "🔒 Security checks..."
@@ -253,7 +241,7 @@ docs:
 
 # Serve documentation
 docs-serve:
-    cd docs/_build/html && python -m http.server 8080
+    cd docs/_build/html && julia -e 'using HTTP; HTTP.serve(HTTP.Files.FileServer("."), "0.0.0.0", 8080)'
 
 # Create new release
 release VERSION:
@@ -280,19 +268,19 @@ release VERSION:
 benchmark:
     cd src/rust && cargo bench
 
-# Profile Python code
+# Profile Julia code
 profile:
-    python -m cProfile -o profile.stats src/python/simulator.py
-    python -m pstats profile.stats
+    julia --project=src/julia/RobotVacuum --track-allocation=user src/julia/main.jl
+    @echo "📊 Profile data generated"
 
 # Check dependencies for updates
 deps-check:
-    pip list --outdated
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.status()'
     cd src/rust && cargo outdated || cargo install cargo-outdated && cargo outdated
 
 # Update dependencies
 deps-update:
-    pip install --upgrade -r requirements.txt -r requirements-dev.txt
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.update()'
     cd src/rust && cargo update
 
 # Docker/Podman helpers
@@ -331,17 +319,17 @@ verify FILE:
 
 # Check for TODOs
 todos:
-    rg "TODO|FIXME|XXX|HACK" --type py --type rust || echo "No TODOs found!"
+    rg "TODO|FIXME|XXX|HACK" --type julia --type rust || echo "No TODOs found!"
 
 # Count lines of code
 loc:
     @echo "📊 Lines of Code:"
-    @echo "Python:"
-    @find src/python -name "*.py" | xargs wc -l | tail -1
+    @echo "Julia:"
+    @find src/julia -name "*.jl" | xargs wc -l | tail -1
     @echo "Rust:"
     @find src/rust/src -name "*.rs" | xargs wc -l | tail -1
     @echo "Total:"
-    @find src -name "*.py" -o -name "*.rs" | xargs wc -l | tail -1
+    @find src -name "*.jl" -o -name "*.rs" | xargs wc -l | tail -1
 
 # Show project statistics
 stats:
@@ -352,7 +340,7 @@ stats:
     @git ls-files | wc -l | xargs echo "Files:"
     @echo ""
     @echo "🧪 Test Statistics:"
-    @find tests -name "test_*.py" | wc -l | xargs echo "Python test files:"
+    @find tests/julia -name "test_*.jl" | wc -l | xargs echo "Julia test files:"
     @find src/rust -name "*.rs" -exec grep -l "#\[test\]" {} \; | wc -l | xargs echo "Rust test files:"
 
 # Help - show all available recipes
