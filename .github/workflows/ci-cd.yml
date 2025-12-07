@@ -67,19 +67,22 @@ jobs:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
       - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.33.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+          limit-severities-for-sarif: true
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
+          category: 'trivy-filesystem'
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master
@@ -238,18 +241,21 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner (image)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.33.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+          limit-severities-for-sarif: true
 
       - name: Upload Trivy image results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-image-results.sarif') != ''
         with:
           sarif_file: 'trivy-image-results.sarif'
+          category: 'trivy-container'
 
       - name: Run Hadolint (Dockerfile linting)
         uses: hadolint/hadolint-action@v3.1.0
@@ -260,7 +266,7 @@ jobs:
       - name: Scan with Grype
         uses: anchore/scan-action@v3
         with:
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           fail-build: false
           severity-cutoff: high
 
