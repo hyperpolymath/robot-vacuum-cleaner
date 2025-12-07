@@ -9,21 +9,12 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-GraphQLClient = "b4cd8a85-6a93-5de3-b62d-c36d5b3f5a3e"
-JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [compat]
 julia = "1.9"
 StaticArrays = "1"
 Distributions = "0.25"
-GraphQLClient = "0.1"
-JSON3 = "1"
-HTTP = "1"
-Plots = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
