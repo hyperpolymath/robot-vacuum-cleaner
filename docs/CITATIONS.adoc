@@ -1,0 +1,36 @@
+= robot-vacuum-cleaner - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{robot-vacuum-cleaner_2025,
+  author = {Polymath, Hyper},
+  title = {robot-vacuum-cleaner},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/robot-vacuum-cleaner},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _robot-vacuum-cleaner_ [Computer software]. Available at: https://github.com/hyperpolymath/robot-vacuum-cleaner
+
+== OSCOLA
+
+Hyper Polymath, 'robot-vacuum-cleaner' (2025) <https://github.com/hyperpolymath/robot-vacuum-cleaner>
+
+== MLA
+
+Polymath, Hyper. "robot-vacuum-cleaner." 2025, github.com/hyperpolymath/robot-vacuum-cleaner.
+
+== APA 7
+
+Polymath, H. (2025). _robot-vacuum-cleaner_ [Computer software]. GitHub. https://github.com/hyperpolymath/robot-vacuum-cleaner
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]
