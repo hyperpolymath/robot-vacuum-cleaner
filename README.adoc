@@ -1,76 +1,509 @@
-= robot-vacuum-cleaner
-Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
-:toc: macro
-:icons: font
-:source-highlighter: rouge
-:experimental:
-:url-github: https://github.com/hyperpolymath/robot-vacuum-cleaner
-:url-gitlab: https://gitlab.com/hyperpolymath/robot-vacuum-cleaner
-:url-bitbucket: https://bitbucket.org/hyperpolymath/robot-vacuum-cleaner
-:url-codeberg: https://codeberg.org/hyperpolymath/robot-vacuum-cleaner
+= Robot Vacuum Cleaner Simulator
 
-Repository cleanup and maintenance automation
+A comprehensive, production-grade robot vacuum cleaner simulation system with dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
 
-image:https://img.shields.io/badge/RSR-Certified-gold[RSR Certified]
-image:https://img.shields.io/badge/License-AGPL%20v3-blue[License]
+[![CI/CD](https://github.com/Hyperpolymath/robot-vacuum-cleaner/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/Hyperpolymath/robot-vacuum-cleaner/actions)
+[![codecov](https://codecov.io/gh/Hyperpolymath/robot-vacuum-cleaner/branch/main/graph/badge.svg)](https://codecov.io/gh/Hyperpolymath/robot-vacuum-cleaner)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-toc::[]
+== Features
 
-== Overview
+=== Core Functionality
+- *Autonomous Navigation*: Advanced path planning with multiple algorithms (A*, spiral, zigzag, wall-follow, random)
+- *SLAM Implementation*: Simultaneous Localization and Mapping with particle filter
+- *Sensor Simulation*: Obstacle detection, cliff detection, bumper sensors
+- *Battery Management*: Realistic battery consumption and charging dock behavior
+- *Multiple Cleaning Modes*: Auto, spot, edge, spiral, zigzag, wall-follow, random
+- *Real-time Visualization*: matplotlib-based visualization of robot behavior and environment
 
-robot-vacuum-cleaner is part of the link:https://rhodium.sh[Rhodium Standard] (RSR) ecosystem.
+=== Technology Stack
 
-Domain: *software-development*
+==== Languages & Frameworks
+- *Julia 1.9+*: Primary simulation and API implementation with high-performance numerics
+- *Rust*: Systems programming variant for compute-intensive operations
+- *GraphQL*: Modern API layer (Julia implementation)
+- *LinearAlgebra/Statistics*: Native Julia numerical computing
 
-== Installation
+==== Infrastructure
+- *Containers*: Podman with Chainguard Wolfi base images for supply chain security
+- *CI/CD*: Comprehensive GitHub Actions and GitLab CI pipelines
+- *Monitoring*: Prometheus + Grafana stack
+- *Salt*: Offline development and maintenance support
 
-[source,bash]
-----
-# Clone from GitHub (primary)
-git clone {url-github}
+==== Security & Quality
+- *Security Scanning*: Trivy, GitLeaks, cargo audit, Pkg.audit(), OWASP Dependency Check
+- *Code Quality*: JuliaFormatter, Lint.jl, Rust clippy
+- *Testing*: Julia Test with 70%+ coverage requirement, Rust cargo test
+- *Pre-commit Hooks*: Automated linting, formatting, and security checks
 
-# Or from mirrors
-git clone {url-gitlab}
-git clone {url-codeberg}
-----
+== Quick Start
 
-== RSR Stack
+=== Prerequisites
 
-This project follows RSR conventions:
+```bash
+= Julia 1.9+
+julia --version
 
-* ✅ ReScript for frontend/logic
-* ✅ Deno for JS runtime
-* ✅ WASM for performance-critical code
-* ✅ Rust/OCaml/Haskell for systems/proofs
-* ✅ Guile/Scheme for configuration
-* ❌ No TypeScript
-* ❌ No Go
-* ❌ No npm
+= Rust (latest stable)
+rustc --version
 
-== Mirrors
+= Podman or Docker
+podman --version
 
-[cols="1,2"]
-|===
-| Platform | URL
+= Just (task runner)
+just --version
 
-| GitHub (primary) | {url-github}
-| GitLab | {url-gitlab}
-| Bitbucket | {url-bitbucket}
-| Codeberg | {url-codeberg}
-|===
+= Salt (optional, for infrastructure management)
+salt-call --version
+```
 
-== License
+=== Installation
 
-Licensed under AGPL-3.0-or-later OR LicenseRef-Palimpsest-0.5.
+==== Julia Environment
 
-See link:LICENSE[LICENSE] for details.
+```bash
+= Clone repository
+git clone https://github.com/Hyperpolymath/robot-vacuum-cleaner.git
+cd robot-vacuum-cleaner
+
+= Setup Julia packages
+cd src/julia/RobotVacuum
+julia --project=. -e 'using Pkg; Pkg.instantiate()'
+
+= Or use just
+cd ../../..
+just setup  # Sets up Julia, Rust, and git hooks
+```
+
+==== Rust Build
+
+```bash
+cd src/rust
+cargo build --release
+cargo test
+```
+
+==== Container Build
+
+```bash
+= Build with Podman
+podman build -f docker/Containerfile -t robot-vacuum:latest .
+
+= Or use compose
+podman-compose -f docker/compose.yaml up -d
+```
+
+=== Usage
+
+==== Julia Simulator
+
+```julia
+using RobotVacuum
+
+= Configure simulation
+config = SimulationConfig(
+    room_type="furnished",
+    cleaning_mode=Auto,
+    max_steps=5000,
+    enable_slam=true,
+    random_seed=42
+)
+
+= Run simulation
+results = run_simulation(config)
+
+= Display results
+println("Coverage: $(results["cleaning_coverage"])%")
+println("Total Distance: $(results["total_distance"]) units")
+println("Battery Cycles: $(results["battery_cycles"])")
+```
+
+Or use the CLI:
+
+```bash
+= Run with default settings
+julia --project=src/julia/RobotVacuum src/julia/main.jl
+
+= Run with specific options
+julia --project=src/julia/RobotVacuum src/julia/main.jl \
+    --room-type empty \
+    --cleaning-mode spot \
+    --max-steps 10000 \
+    --seed 42
+
+= Or use just
+just run-julia
+```
+
+==== GraphQL API
+
+```bash
+= Start the API server (Julia implementation)
+julia --project=src/julia/RobotVacuum src/julia/graphql_server.jl
+
+= Or use just
+just run-api
+
+= Access GraphQL playground
+open http://localhost:8000/graphql
+```
+
+Example GraphQL queries:
+
+```graphql
+= Get robot status
+query {
+  robotStatus {
+    position { x y }
+    batteryLevel
+    state
+    stats {
+      totalDistance
+      areaCleaned
+    }
+  }
+}
+
+= Start cleaning
+mutation {
+  startCleaning(mode: "zigzag") {
+    success
+    message
+  }
+}
+```
+
+==== Rust CLI
+
+```bash
+= Build and run
+cd src/rust
+cargo run --release -- --width 50 --height 50 --max-steps 10000
+
+= With options
+cargo run --release -- \
+  --width 80 \
+  --height 60 \
+  --max-steps 15000 \
+  --slam \
+  --start-x 40.0 \
+  --start-y 30.0 \
+  --verbose
+```
+
+== Architecture
+
+=== Project Structure
+
+```
+robot-vacuum-cleaner/
+├── src/
+│   ├── julia/           # Julia implementation
+│   │   ├── RobotVacuum/ # Julia package
+│   │   │   ├── Project.toml     # Package definition
+│   │   │   ├── src/
+│   │   │   │   ├── RobotVacuum.jl  # Main module
+│   │   │   │   ├── types.jl        # Type definitions
+│   │   │   │   ├── robot.jl        # Robot core
+│   │   │   │   ├── environment.jl  # Environment simulation
+│   │   │   │   ├── pathplanning.jl # Path planning algorithms
+│   │   │   │   ├── slam.jl         # SLAM implementation
+│   │   │   │   └── simulator.jl    # Simulation controller
+│   │   ├── main.jl              # CLI entry point
+│   │   └── graphql_server.jl    # GraphQL server
+│   └── rust/            # Rust implementation
+│       ├── src/
+│       │   ├── robot.rs
+│       │   ├── environment.rs
+│       │   ├── pathfinding.rs
+│       │   ├── slam.rs
+│       │   └── simulator.rs
+│       └── Cargo.toml
+├── tests/
+│   ├── julia/           # Julia tests
+│   │   ├── runtests.jl
+│   │   ├── test_robot.jl
+│   │   └── test_simulator.jl
+│   └── integration/     # Integration tests
+├── docker/              # Container configurations
+│   ├── Containerfile    # Production container
+│   ├── Containerfile.dev
+│   └── compose.yaml
+├── .github/
+│   └── workflows/       # GitHub Actions CI/CD
+├── .gitlab-ci.yml       # GitLab CI/CD
+├── salt/                # Salt configuration
+│   ├── minion.d/
+│   └── states/
+├── hooks/               # Git hooks
+├── scripts/             # Utility scripts
+├── monitoring/          # Prometheus/Grafana configs
+└── docs/                # Documentation
+
+```
+
+=== Path Planning Algorithms
+
+1. **A\* Pathfinding**: Optimal path to goal with configurable heuristics
+2. *Spiral Coverage*: Expanding spiral pattern from center
+3. *Zigzag (Boustrophedon)*: Systematic row-by-row coverage
+4. *Wall Following*: Right-hand rule for perimeter coverage
+5. *Random Walk*: Coverage-optimized random exploration
+
+=== SLAM System
+
+- *Occupancy Grid Mapping*: Probabilistic grid representation
+- *Particle Filter*: Monte Carlo localization
+- *Log-odds Updates*: Efficient probability updates
+- *Bresenham Ray Tracing*: Fast line-of-sight calculations
+
+== Development
+
+=== Running Tests
+
+```bash
+= All tests
+just test
+
+= Julia tests only
+just test-julia
+= Or: cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.test()'
+
+= Rust tests only
+just test-rust
+= Or: cd src/rust && cargo test
+
+= With coverage
+just coverage
+```
+
+=== Code Quality
+
+```bash
+= Format all code
+just fmt
+
+= Lint all code
+just lint
+
+= Security scanning
+just security
+
+= Or individually:
+just fmt-julia     # Format Julia code
+just fmt-rust      # Format Rust code
+just lint-julia    # Lint Julia code
+just lint-rust     # Lint Rust code (clippy)
+```
+
+=== Pre-commit Hooks
+
+```bash
+= Install pre-commit (requires Python)
+pre-commit install
+
+= Run manually
+pre-commit run --all-files
+
+= Or use just
+just pre-commit
+```
+
+== CI/CD
+
+=== GitHub Actions
+
+Comprehensive pipeline including:
+- Code quality checks (JuliaFormatter, Lint.jl, cargo fmt, clippy)
+- Security scanning (Trivy, GitLeaks, cargo audit, Pkg.audit())
+- Multi-version Julia testing (1.9, 1.10, nightly)
+- Rust testing and clippy
+- Container building and scanning
+- SonarCloud analysis
+- Integration tests
+- Automated deployment
+
+=== GitLab CI
+
+Mirror of GitHub Actions with additional features:
+- Scheduled security scans
+- Multiple environment deployments (staging, production)
+- Dependency caching
+- Parallel test execution
+- Custom runners support
+
+== Container Deployment
+
+=== Development
+
+```bash
+= Start development stack
+podman-compose -f docker/compose.yaml --profile dev up -d
+
+= View logs
+podman-compose -f docker/compose.yaml logs -f api-dev
+
+= Stop services
+podman-compose -f docker/compose.yaml down
+```
+
+=== Production
+
+```bash
+= Build production image
+podman build -f docker/Containerfile -t robot-vacuum:latest .
+
+= Run with monitoring
+podman-compose -f docker/compose.yaml --profile monitoring up -d
+
+= Access services
+= API: http://localhost:8000
+= Prometheus: http://localhost:9090
+= Grafana: http://localhost:3000
+```
+
+== Monitoring
+
+=== Prometheus Metrics
+
+- Robot battery level
+- Cleaning coverage percentage
+- Distance traveled
+- API request rates
+- Error rates
+- System resources
+
+=== Grafana Dashboards
+
+Pre-configured dashboards for:
+- Robot status overview
+- Cleaning performance
+- API performance
+- System health
+
+Access: http://localhost:3000 (admin/admin)
+
+== Salt Infrastructure
+
+=== Development Environment Setup
+
+```bash
+= Apply development state
+salt-call --local state.apply development
+
+= Setup CI/CD tools
+salt-call --local state.apply cicd
+
+= Configure monitoring
+salt-call --local state.apply monitoring
+```
+
+=== Offline Support
+
+Salt minion configuration enables:
+- Automated dependency installation
+- Development environment provisioning
+- Build and test orchestration
+- Offline CI/CD execution
+
+== Security
+
+=== Supply Chain Security
+
+- *Chainguard Wolfi*: Minimal, security-focused container base images
+- *Trivy Scanning*: Container and filesystem vulnerability detection
+- *SBOM Generation*: Software Bill of Materials with Syft
+- *Dependency Scanning*: Regular security audits
+- *GitLeaks*: Secrets detection in commits
+
+=== Security Best Practices
+
+- No secrets in code or containers
+- Regular dependency updates
+- Automated security scanning in CI
+- Supply chain verification
+- Least privilege access
+
+== Performance
+
+=== Julia Performance
+
+- Just-In-Time (JIT) compilation for near-C performance
+- Native array operations with Broadcasting
+- Efficient path planning with A*
+- Type-stable code for optimal performance
+- Multiple dispatch for specialized algorithms
+
+=== Rust Performance
+
+- Zero-cost abstractions
+- SIMD optimizations where applicable
+- Parallel processing with Rayon
+- Release build optimizations (LTO, codegen-units=1)
+
+=== Benchmarks
+
+Run benchmarks:
+
+```bash
+cd src/rust
+cargo bench --features benchmarks
+```
 
 == Contributing
 
-See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make changes and add tests
+4. Ensure all tests pass and pre-commit hooks succeed
+5. Commit with conventional commit format
+6. Push to your fork
+7. Open a Pull Request
 
-== Metadata
+=== Commit Message Format
 
-* Domain: software-development
-* Framework: RSR (Rhodium Standard Repository)
-* Dublin Core: link:.well-known/dc.xml[.well-known/dc.xml]
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build
+
+== License
+
+MIT License - see LICENSE file for details
+
+== Acknowledgments
+
+- SLAM algorithms inspired by probabilistic robotics research
+- Path planning based on classical robotics algorithms
+- Container security following Chainguard best practices
+- CI/CD patterns from industry standards
+
+== Roadmap
+
+- [ ] Advanced SLAM with loop closure
+- [ ] Multi-robot coordination
+- [ ] Machine learning-based navigation
+- [ ] Mobile app integration
+- [ ] Cloud deployment configurations
+- [ ] Advanced visualization with 3D rendering
+- [ ] Real-time WebSocket updates
+- [ ] Historical data analysis and optimization
+
+== Support
+
+- Documentation: See `docs/` directory
+- Issues: GitHub Issues
+- Discussions: GitHub Discussions
+
+== Authors
+
+Robot Vacuum Team
+
+---
+
+*Built with ❤️ using Julia, Rust, and modern DevOps practices*
