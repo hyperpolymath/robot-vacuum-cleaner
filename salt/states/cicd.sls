@@ -81,7 +81,7 @@ gitlab_runner_config:
         [[runners]]
           name = "local-runner"
           url = "http://localhost"
-          token = "local-development-token"
+          token = "{{ pillar.get('gitlab_runner_token', 'REPLACE_WITH_TOKEN') }}"
           executor = "shell"
           shell = "bash"
           [runners.custom_build_dir]
