@@ -1,7 +1,7 @@
 = Robot Vacuum Cleaner Simulator
 
 image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
-image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
 
 
 A comprehensive, production-grade robot vacuum cleaner simulation system with dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
