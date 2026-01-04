@@ -46,7 +46,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - language: actions
+        - language: javascript-typescript
           build-mode: none
         - language: rust
           build-mode: none
