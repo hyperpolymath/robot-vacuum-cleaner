@@ -1,6 +1,7 @@
 //! SLAM (Simultaneous Localization and Mapping) implementation
 //!
-//! Placeholder for future SLAM implementation
+//! Provides occupancy grid mapping and particle filter localization
+//! for robot vacuum navigation and positioning.
 
 use crate::types::Pose;
 use ndarray::Array2;
