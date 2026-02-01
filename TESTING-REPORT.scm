@@ -1,4 +1,4 @@
-;; SPDX-License-Identifier: MIT
+;; SPDX-License-Identifier: PMPL-1.0-or-later
 ;; Testing Report for Robot Vacuum Cleaner Project
 ;; Generated: 2025-12-29
 

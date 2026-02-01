@@ -1,0 +1,72 @@
+= Robot Vacuum Cleaner Simulator Roadmap
+:toc:
+:toclevels: 3
+
+== Overview
+
+Development roadmap for the robot vacuum cleaner simulation system with dual Julia/Rust implementations.
+
+== v1.0 - Production Release (Current)
+
+**Target:** 2026-02
+**Status:** Active development
+
+=== Core Features
+* ✅ Autonomous navigation (A*, spiral, zigzag, wall-follow, random)
+* ✅ SLAM implementation with particle filter
+* ✅ Sensor simulation (obstacle, cliff, bumper)
+* ✅ Battery management and charging dock
+* ✅ Multiple cleaning modes
+* ✅ Real-time matplotlib visualization
+* ✅ Dual implementation (Julia + Rust)
+* ✅ GraphQL API
+
+=== Quality & Testing
+* ✅ CI/CD pipeline
+* ✅ Code coverage tracking
+* ✅ Comprehensive test suite
+
+=== Remaining for v1.0
+* [ ] ROADMAP.adoc (this file)
+* [ ] PLAYBOOK.scm, AGENTIC.scm, NEUROSYM.scm
+* [ ] .tool-versions
+* [ ] Final performance optimization
+
+== v1.1 - Enhanced Simulation
+
+**Target:** 2026-03
+
+=== Advanced Algorithms
+* Improved SLAM with visual features
+* Multi-robot coordination
+* Dynamic obstacle avoidance
+* Learning-based path optimization
+
+=== Visualization
+* 3D visualization
+* WebGL-based interactive viewer
+* Real-time metrics dashboard
+* Replay system
+
+== v2.0 - AI Integration
+
+**Target:** 2026-Q3
+
+=== Machine Learning
+* Reinforcement learning for optimal cleaning
+* Adaptive behavior based on environment
+* Predictive maintenance
+* Energy efficiency optimization
+
+=== Neurosymbolic Features
+* Formal verification of path planning
+* Provably safe navigation
+* Hybrid symbolic-neural decision making
+
+== Contributing
+
+See CONTRIBUTING.md for guidelines.
+
+== Versioning
+
+Follows semantic versioning (SemVer).
