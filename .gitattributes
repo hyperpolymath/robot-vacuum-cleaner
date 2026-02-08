@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # RSR-compliant .gitattributes
 
 * text=auto eol=lf
@@ -33,9 +33,9 @@
 # Config
 .gitignore     text eol=lf
 .gitattributes text eol=lf
-Justfile       text eol=lf linguist-language=Just
-justfile       text eol=lf linguist-language=Just
-Mustfile       text eol=lf linguist-language=YAML
+Justfile       text eol=lf linguist-language=Just linguist-detectable=false
+justfile       text eol=lf linguist-language=Just linguist-detectable=false
+Mustfile       text eol=lf linguist-language=YAML linguist-detectable=false
 Containerfile  text eol=lf
 
 # Scripts
