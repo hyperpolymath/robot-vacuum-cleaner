@@ -556,3 +556,8 @@ Robot Vacuum Team
 ---
 
 *Built with ❤️ using Julia, Rust, and modern DevOps practices*
+
+
+== Architecture
+
+See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.
