@@ -346,3 +346,8 @@ stats:
 # Help - show all available recipes
 help:
     @just --list --unsorted
+
+# [AUTO-GENERATED] Multi-arch / RISC-V target
+build-riscv:
+	@echo "Building for RISC-V..."
+	cross build --target riscv64gc-unknown-linux-gnu
