@@ -6,8 +6,8 @@
   "description": "Production-ready v1.0.0 robot vacuum cleaner simulator",
   "version": "0.1.0",
   "dateCreated": "2025-12-10",
-  "dateModified": "2025-12-10",
-  "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+  "dateModified": "2026-03-14",
+  "license": "https://github.com/hyperpolymath/palimpsest-license",
   "codeRepository": "https://github.com/hyperpolymath/robot-vacuum-cleaner",
   "issueTracker": "https://github.com/hyperpolymath/robot-vacuum-cleaner/issues",
   "programmingLanguage": ["Guile Scheme"],
@@ -15,9 +15,9 @@
   "keywords": ["RSR", "rhodium-standard"],
   "author": [{
     "@type": "Person",
-    "givenName": "Hyper",
-    "familyName": "Polymath",
-    "email": "hyperpolymath@proton.me"
+    "givenName": "Jonathan D.A.",
+    "familyName": "Jewell",
+    "email": "j.d.a.jewell@open.ac.uk"
   }],
   "isPartOf": [{
     "@type": "SoftwareApplication",

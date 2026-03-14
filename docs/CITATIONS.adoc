@@ -5,30 +5,30 @@
 
 [source,bibtex]
 ----
-@software{robot-vacuum-cleaner_2025,
-  author = {Polymath, Hyper},
+@software{robot-vacuum-cleaner_2026,
+  author = {Jewell, Jonathan D.A.},
   title = {robot-vacuum-cleaner},
-  year = {2025},
+  year = {2026},
   url = {https://github.com/hyperpolymath/robot-vacuum-cleaner},
-  license = {AGPL-3.0-or-later}
+  license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2025) _robot-vacuum-cleaner_ [Computer software]. Available at: https://github.com/hyperpolymath/robot-vacuum-cleaner
+Jewell, J. D. A. (2026) _robot-vacuum-cleaner_ [Computer software]. Available at: https://github.com/hyperpolymath/robot-vacuum-cleaner
 
 == OSCOLA
 
-Hyper Polymath, 'robot-vacuum-cleaner' (2025) <https://github.com/hyperpolymath/robot-vacuum-cleaner>
+Jonathan D.A. Jewell, 'robot-vacuum-cleaner' (2026) <https://github.com/hyperpolymath/robot-vacuum-cleaner>
 
 == MLA
 
-Polymath, Hyper. "robot-vacuum-cleaner." 2025, github.com/hyperpolymath/robot-vacuum-cleaner.
+Jewell, Jonathan D.A. "robot-vacuum-cleaner." 2026, github.com/hyperpolymath/robot-vacuum-cleaner.
 
 == APA 7
 
-Polymath, H. (2025). _robot-vacuum-cleaner_ [Computer software]. GitHub. https://github.com/hyperpolymath/robot-vacuum-cleaner
+Jewell, J. D. A. (2026). _robot-vacuum-cleaner_ [Computer software]. GitHub. https://github.com/hyperpolymath/robot-vacuum-cleaner
 
 == See Also
 
