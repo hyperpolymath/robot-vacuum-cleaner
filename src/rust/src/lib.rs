@@ -4,6 +4,7 @@
 //! This library provides a high-performance implementation of a robot vacuum
 //! cleaner simulator with advanced path planning, SLAM, and control algorithms.
 
+#![forbid(unsafe_code)]
 pub mod robot;
 pub mod environment;
 pub mod pathfinding;
