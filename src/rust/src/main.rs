@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 //! Robot Vacuum Cleaner CLI Application
 
 use clap::Parser;

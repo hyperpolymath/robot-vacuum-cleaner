@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 //! SLAM (Simultaneous Localization and Mapping) implementation
 //!
 //! Provides occupancy grid mapping and particle filter localization

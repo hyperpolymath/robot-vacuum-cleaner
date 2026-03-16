@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
 """
 Environment simulation for robot vacuum testing.
 """

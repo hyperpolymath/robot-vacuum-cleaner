@@ -1,4 +1,5 @@
 #!/usr/bin/env julia
+# SPDX-License-Identifier: PMPL-1.0-or-later
 
 """
 Robot Vacuum Cleaner Simulator - Command Line Interface

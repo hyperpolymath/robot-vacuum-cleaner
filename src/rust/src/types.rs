@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 //! Core types and data structures
 
 use serde::{Deserialize, Serialize};

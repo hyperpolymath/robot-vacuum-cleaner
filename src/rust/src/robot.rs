@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 //! Robot vacuum core implementation
 
 use crate::types::{Position, SensorData, RobotStats};

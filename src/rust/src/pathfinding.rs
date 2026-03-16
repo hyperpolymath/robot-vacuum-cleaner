@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 //! Path finding and coverage planning algorithms
 
 use crate::types::Position;
