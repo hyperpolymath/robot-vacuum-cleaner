@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Robot Vacuum Cleaner Simulator — Show Me The Receipts
+:toc:
+:icons: font
+
+The README makes claims. This file backs them up.
+
+[quote, README]
+____
+A comprehensive, production-grade robot vacuum cleaner simulation system with dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
+____
+
+== File Map
+
+[cols="1,2"]
+|===
+| Path | What's There
+
+| `src/` | Source code
+| `test(s)/` | Test suite
+|===
+
+== Questions?
+
+Open an issue or reach out directly — happy to explain anything in more detail.
