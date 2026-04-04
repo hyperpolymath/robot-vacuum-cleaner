@@ -1,23 +1,169 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = Robot Vacuum Cleaner Simulator — Show Me The Receipts
 :toc:
+:toclevels: 3
 :icons: font
+:author: Jonathan D.A. Jewell
+:email: j.d.a.jewell@open.ac.uk
 
-The README makes claims. This file backs them up.
+The README makes claims. This file backs them up with specific file paths,
+honest caveats about depth vs. breadth, and the context an external reviewer
+needs to trace what each component does and how it is checked.
+
+== Claim 1: Dual Julia and Rust implementations with SLAM
 
 [quote, README]
 ____
-A comprehensive, production-grade robot vacuum cleaner simulation system with dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
+A comprehensive, production-grade robot vacuum cleaner simulation system with
+dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and
+enterprise CI/CD infrastructure.
 ____
+
+*How it works.*
+The Julia implementation lives in `src/julia/RobotVacuum/src/`.
+`robot.jl` defines the mutable `Robot` struct with typed fields for battery
+level, cleaning mode, heading, dock position, and an `@enum RobotState`
+covering Idle / Cleaning / ReturningToDock / Charging / Error / Stuck.
+`slam.jl` implements a particle-filter SLAM loop: `OccupancyGrid` holds a
+`Matrix{Float32}` updated by ray-casting from sensor readings, while
+`ParticleFilter` maintains a `Vector{Particle}` — each carrying a `Pose` —
+so localisation and map-building happen simultaneously during every tick.
+`pathplanning.jl` provides five strategies (A*, spiral, zigzag, wall-follow,
+random) that consume the occupancy grid and emit waypoints consumed by the
+simulation loop in `simulator.jl`.
+The Rust variant (`src/rust/`) replicates the same architecture for
+compute-intensive benchmarks and supply-chain diversity.
+
+*Honest caveat.*
+The README uses the phrase "production-grade"; the codebase has genuine
+algorithmic depth (particle filter SLAM, multi-mode coverage planning) but
+no hardware-in-the-loop validation path.
+The GraphQL API (`src/graphql/`) and Prometheus/Grafana observability stack
+are structurally present but runtime integration tests are thin — consult
+`TEST-NEEDS.md` for the acknowledged gaps before treating coverage claims as
+complete.
+
+== Claim 2: Multiple security and quality scanning layers
+
+[quote, README]
+____
+Security Scanning: Trivy, GitLeaks, cargo audit, Pkg.audit(), OWASP
+Dependency Check. Code Quality: JuliaFormatter, Lint.jl, Rust clippy.
+____
+
+*How it works.*
+`Justfile` holds the canonical recipe set: `just test`, `just lint`,
+`just audit`.
+Salt state files under `salt/` configure the offline dev environment so
+identical quality gates run without network access.
+Container definitions in `docker/` use Chainguard Wolfi base images to reduce
+supply-chain surface.
+`validate-robot-config.k9.ncl` exercises the K9 Nickel schema layer on the
+robot configuration at startup, providing a concrete cross-repo integration
+with `tree-sitter-k9`.
+
+*Honest caveat.*
+The 70 % coverage floor stated in the README depends on `tests/` exercising
+the path-planner and SLAM paths through their edge cases — a reviewer should
+run `just test` and inspect the Codecov badge before accepting the threshold.
+
+== Dogfooded Across The Account
+
+[cols="1,3", options="header"]
+|===
+| Tool / Repo | How robot-vacuum-cleaner uses it
+
+| `panic-attacker`
+| Pre-commit security scan gate invoked via `just pre-commit`
+
+| `contractile.just` / contractiles
+| Standard hyperpolymath contractile integration: `contractile.just` included by `Justfile`
+
+| `stapeln.toml`
+| Container build manifest consumed by the Stapeln container system for the Podman image
+
+| `tree-sitter-k9`
+| `validate-robot-config.k9.ncl` is a K9-format Nickel file parsed by the K9 grammar at config-load time
+
+| `guix.scm` / `flake.nix`
+| Reproducible dev environment via Guix (primary) and Nix (fallback)
+
+| `TESTING-REPORT.scm`
+| Machine-readable test coverage checkpoint consumed by Hypatia CI rules
+|===
 
 == File Map
 
-[cols="1,2"]
+[cols="2,4", options="header"]
 |===
 | Path | What's There
 
-| `src/` | Source code
-| `test(s)/` | Test suite
+| `src/julia/RobotVacuum/src/robot.jl`
+| Core `Robot` struct, `@enum RobotState`, `@enum CleaningMode`, sensor data fields — the central domain model
+
+| `src/julia/RobotVacuum/src/slam.jl`
+| Particle-filter SLAM: `OccupancyGrid` (float matrix), `Particle` (pose + weight), `ParticleFilter` — the algorithmic centrepiece
+
+| `src/julia/RobotVacuum/src/pathplanning.jl`
+| Five path-planning strategies; A* occupancy-grid search, spiral/zigzag generators, wall-follower, random walk
+
+| `src/julia/RobotVacuum/src/environment.jl`
+| Room model: obstacle placement, grid cell encoding, cliff-zone registration
+
+| `src/julia/RobotVacuum/src/simulator.jl`
+| Main simulation loop: ticks state machine, applies sensor reads, dispatches planning calls, tracks `RobotStats`
+
+| `src/julia/RobotVacuum/src/types.jl`
+| Shared type aliases: `Position`, `Pose`, `SensorData`, `RobotStats`
+
+| `src/julia/RobotVacuum/src/RobotVacuum.jl`
+| Package entry point; re-exports the public API surface
+
+| `src/graphql/`
+| Julia GraphQL API layer (HTTP.jl) exposing simulation state over a typed schema
+
+| `src/rust/`
+| Rust reimplementation: `Cargo.toml` + `src/` mirroring Julia's module layout
+
+| `src/main.jl`
+| CLI entry point: argument parsing, environment construction, simulation run
+
+| `tests/`
+| Julia `Test.jl` suite covering state transitions and path-planner output
+
+| `docker/`
+| Chainguard Wolfi-based container definitions (Podman-compatible)
+
+| `salt/`
+| SaltStack state files for offline dev environment configuration
+
+| `scripts/`
+| Shell helpers: `setup.sh`, lint runners, benchmark drivers
+
+| `validate-robot-config.k9.ncl`
+| K9-format Nickel schema validating robot config parameters at startup
+
+| `stapeln.toml`
+| Container build manifest for the Stapeln system
+
+| `Justfile`
+| All developer recipes: `test`, `lint`, `audit`, `build`, `bench`
+
+| `contractile.just`
+| Hyperpolymath contractile integration hook
+
+| `flake.nix` / `guix.scm`
+| Reproducible dev environment definitions (Nix and Guix)
+
+| `TESTING-REPORT.adoc`
+| Human-readable test coverage narrative
+
+| `TESTING-REPORT.scm`
+| Machine-readable test coverage in A2ML checkpoint format
+
+| `TEST-NEEDS.md`
+| Known gaps: integration tests for GraphQL layer, hardware-in-the-loop stubs
 |===
 
 == Questions?
