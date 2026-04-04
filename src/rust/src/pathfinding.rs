@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
 //! Path finding and coverage planning algorithms
 
-use crate::types::Position;
 use crate::environment::Environment;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::cmp::Ordering;

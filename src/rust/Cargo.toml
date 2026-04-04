@@ -74,6 +74,11 @@ name = "slam"
 harness = false
 required-features = ["benchmarks"]
 
+[[bench]]
+name = "robot_bench"
+harness = false
+required-features = ["benchmarks"]
+
 [profile.release]
 opt-level = 3
 lto = true

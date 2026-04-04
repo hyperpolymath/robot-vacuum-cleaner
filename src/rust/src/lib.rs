@@ -14,7 +14,7 @@ pub mod types;
 
 pub use robot::{Robot, RobotState, CleaningMode};
 pub use environment::{Environment, CellType};
-pub use simulator::Simulator;
+pub use simulator::{Simulator, SimulationConfig, SimulationResults};
 pub use types::{Position, Velocity, Pose};
 
 /// Library version

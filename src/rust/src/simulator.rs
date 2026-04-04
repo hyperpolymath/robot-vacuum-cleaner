@@ -3,7 +3,6 @@
 
 use crate::robot::{Robot, RobotState};
 use crate::environment::Environment;
-use crate::pathfinding::AStarPlanner;
 
 /// Simulation configuration
 pub struct SimulationConfig {
@@ -59,7 +58,7 @@ impl Simulator {
             }
             RobotState::Charging => {
                 if self.robot.charge(10.0) {
-                    self.robot.state = RobotState.Cleaning;
+                    self.robot.state = RobotState::Cleaning;
                 }
             }
             _ => {}
