@@ -1,6 +1,6 @@
 # Test-Needs Documentation for robot-vacuum-cleaner
 
-## CRG Grade: D → C
+## CRG Grade: C — ACHIEVED 2026-04-04
 
 This document certifies that `robot-vacuum-cleaner` has achieved **CRG Grade C** comprehensive test coverage.
 
