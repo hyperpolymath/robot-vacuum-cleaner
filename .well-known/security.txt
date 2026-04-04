@@ -3,7 +3,7 @@
 
 Contact: mailto:security@robot-vacuum.example.com
 Contact: https://github.com/Hyperpolymath/robot-vacuum-cleaner/security/advisories/new
-Expires: 2025-11-22T00:00:00.000Z
+Expires: 2027-12-31T23:59:59.000Z
 Encryption: https://robot-vacuum.example.com/pgp-key.asc
 Preferred-Languages: en
 Canonical: https://robot-vacuum.example.com/.well-known/security.txt
