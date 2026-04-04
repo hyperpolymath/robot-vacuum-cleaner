@@ -5,15 +5,16 @@
 name = "docker"
 
 [[functions]]
-name = "process_batch"
-source = "src/batch.rs"
-energy-budget-mj = 50.0
-carbon-budget-mg = 10.0
+name = "move_by"
+source = "src/rust/src/robot.rs"
+energy-budget-mj = 5.0
+carbon-budget-mg = 1.0
 
 [[functions]]
-name = "render_page"
-source = "src/web.rs"
-energy-budget-mj = 5.0
+name = "should_return_to_dock"
+source = "src/rust/src/robot.rs"
+energy-budget-mj = 2.0
+carbon-budget-mg = 0.5
 
 [carbon]
 provider = "static"
