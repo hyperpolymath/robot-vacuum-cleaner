@@ -185,7 +185,7 @@ mod tests {
         let path = planner.find_path((5, 5), (10, 5), false);
 
         assert!(path.is_some());
-        let path = path.unwrap();
+        let path = path.expect("TODO: handle error");
         assert!(!path.is_empty());
         assert_eq!(path[0], (5, 5));
         assert_eq!(path[path.len() - 1], (10, 5));
@@ -203,7 +203,7 @@ mod tests {
         assert!(path_straight.is_some());
 
         // Diagonal path should be shorter
-        assert!(path_diagonal.unwrap().len() < path_straight.unwrap().len());
+        assert!(path_diagonal.expect("TODO: handle error").len() < path_straight.expect("TODO: handle error").len());
     }
 
     #[test]
