@@ -38,7 +38,7 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| justfile | ✅ Complete | 40+ recipes for all tasks |
+| Justfile | ✅ Complete | 40+ recipes for all tasks |
 | Cargo.toml (Rust) | ✅ Complete | Optimized build profiles |
 | Project.toml (Julia) | ✅ Complete | Package dependencies |
 | pre-commit config | ✅ Complete | 15+ automated checks |
@@ -166,7 +166,7 @@ This document tracks compliance with the **Rhodium Standard Repository (RSR) Fra
 6. ✅ MAINTAINERS.md (TPCF structure)
 7. ✅ CHANGELOG.md (Keep a Changelog)
 8. ✅ .well-known/ directory (security.txt, ai.txt, humans.txt)
-9. ✅ Build system (justfile)
+9. ✅ Build system (Justfile)
 10. ✅ Type safety (Julia type inference + Rust)
 11. ✅ Memory safety (Rust ownership model + Julia GC)
 12. ✅ Test coverage >70%
@@ -228,7 +228,7 @@ Expected output:
 6. **Offline**: Core simulation works without network
 7. **TPCF**: Perimeters defined in CONTRIBUTING.md
 8. **Emotional Safety**: Code of Conduct includes provisions
-9. **Build System**: justfile with 40+ recipes
+9. **Build System**: Justfile with 40+ recipes
 10. **.well-known**: All three files present and valid
 
 ## Compliance Score
