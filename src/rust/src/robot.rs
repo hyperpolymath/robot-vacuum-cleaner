@@ -51,8 +51,7 @@ pub struct Robot {
 impl Robot {
     /// Create a new robot
     pub fn new(position: Position) -> Self {
-        let mut path_history = Vec::new();
-        path_history.push(position);
+        let path_history = vec![position];
 
         Self {
             position,
