@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0  # Full history for SonarCloud
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@a0a0978e23276b102daaa707fc6c1fc0c89d13d6 # v2.8.0
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v2.8.0
         with:
           version: ${{ env.JULIA_VERSION }}
 
@@ -91,7 +91,7 @@ jobs:
           category: 'trivy-filesystem'
 
       - name: Run Snyk security scan
-        uses: snyk/actions/node@d05832d319e5dff5d437797b57ce172aa3fac3cd # master 2024-12-09
+        uses: snyk/actions/node@8e119fbb6c251787721d34ba683ed48eba792766 # master 2024-12-09
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -99,7 +99,7 @@ jobs:
           args: --severity-threshold=high
 
       - name: OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@8e1c6be6c9f6e9d2b52e79b2f6e5f57c9e8e8e8e # main 2024-12-09
+        uses: dependency-check/Dependency-Check_Action@1e54355a8b4c8abaa8cc7d0b70aa655a3bb15a6c # main 2024-12-09
         with:
           project: 'robot-vacuum-cleaner'
           path: '.'
@@ -128,7 +128,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Julia ${{ matrix.julia-version }}
-        uses: julia-actions/setup-julia@a0a0978e23276b102daaa707fc6c1fc0c89d13d6 # v2.8.0
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v2.8.0
         with:
           version: ${{ matrix.julia-version }}
 
@@ -143,7 +143,7 @@ jobs:
           julia --project=. -e 'using Pkg; Pkg.test(coverage=true)'
 
       - name: Process coverage
-        uses: julia-actions/julia-processcoverage@6d9d019d6e24c4b3b166d29e69829c3cfd0c1e2e # v1.2.2
+        uses: julia-actions/julia-processcoverage@03114f09f119417c3242a9fb6e0b722676aedf38 # v1.2.2
         with:
           directories: src/julia/RobotVacuum/src
 
@@ -268,13 +268,13 @@ jobs:
           category: 'trivy-container'
 
       - name: Run Hadolint (Dockerfile linting)
-        uses: hadolint/hadolint-action@6efeb7b3ac1a0cb20b7224d0f71f8c6f43b24d8e # v3.1.0
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: docker/Containerfile
           failure-threshold: warning
 
       - name: Scan with Grype
-        uses: anchore/scan-action@4be3c7ed9d2abc473b0aedbdaac97e77539ee97e # v5.0.0
+        uses: anchore/scan-action@869c549e657a088dc0441b08ce4fc0ecdac2bb65 # v5.0.0
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           fail-build: false
@@ -360,7 +360,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@a0a0978e23276b102daaa707fc6c1fc0c89d13d6 # v2.8.0
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v2.8.0
         with:
           version: ${{ env.JULIA_VERSION }}
 
@@ -402,7 +402,7 @@ jobs:
           # e.g., kubectl apply, helm upgrade, etc.
 
       - name: Notify deployment
-        uses: 8398a7/action-slack@60d2bbf1ae7a8c02e0039c34d75f42d23c13a4fb # v3.18.3
+        uses: 8398a7/action-slack@1750b5085f3ec60384090fb7c52965ef822e869e # v3.18.3
         if: always()
         with:
           status: ${{ job.status }}
