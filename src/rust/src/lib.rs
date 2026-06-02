@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Robot Vacuum Cleaner - High Performance Rust Implementation
 //!
 //! This library provides a high-performance implementation of a robot vacuum

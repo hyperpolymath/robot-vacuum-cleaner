@@ -1,5 +1,5 @@
 K9!
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Robot Vacuum Configuration Validator (K9/Nickel).
 #
 # This component provides formal schema validation for the robot vacuum 

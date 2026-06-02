@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Aspect tests: Safety, security, robustness, and boundary conditions
 //!
 //! Tests edge cases, error conditions, and safety properties
