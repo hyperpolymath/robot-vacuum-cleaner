@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! End-to-end integration tests
 //!
 //! Tests complete workflows like cleaning a room, navigating between points, battery management
