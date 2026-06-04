@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Robot Vacuum Cleaner - High Performance Rust Implementation
 //!
 //! This library provides a high-performance implementation of a robot vacuum

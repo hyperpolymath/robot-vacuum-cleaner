@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Contributing to Robot Vacuum Cleaner
 
 Thank you for your interest in contributing! This project follows the **Tri-Perimeter Contribution Framework (TPCF)** to ensure emotional safety and graduated trust.

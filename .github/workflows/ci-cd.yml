@@ -24,6 +24,7 @@ jobs:
   quality:
     name: Code Quality
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -59,6 +60,7 @@ jobs:
   security:
     name: Security Scanning
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       security-events: write
       contents: read
@@ -118,6 +120,7 @@ jobs:
   test-julia:
     name: Julia Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     strategy:
@@ -159,6 +162,7 @@ jobs:
   test-rust:
     name: Rust Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -205,6 +209,7 @@ jobs:
   container-build:
     name: Build & Scan Containers
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [quality, test-julia]
     permissions:
       contents: read
@@ -294,6 +299,7 @@ jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [test-julia]
     permissions:
       contents: read
@@ -327,6 +333,7 @@ jobs:
   integration:
     name: Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [container-build]
     permissions:
       contents: read
@@ -384,6 +391,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [integration, security, sonarcloud]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
@@ -414,6 +422,7 @@ jobs:
   notify:
     name: Notify
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [quality, security, test-julia, test-rust, container-build, integration]
     if: always()
     permissions: {}
