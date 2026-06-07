@@ -1,0 +1,417 @@
+# Justfile for Robot Vacuum Cleaner
+# https://github.com/casey/just
+
+# Default recipe (show help)
+import? "contractile.just"
+
+default:
+    @just --list
+
+# Setup development environment
+setup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "🔧 Setting up development environment..."
+
+    # Check Julia version
+    julia --version
+
+    # Setup Julia packages
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.instantiate()'
+
+    # Install git hooks
+    if [ -f ./scripts/install-hooks.sh ]; then
+        ./scripts/install-hooks.sh
+    fi
+
+    # Install pre-commit
+    pre-commit install
+
+    # Setup Rust
+    cd src/rust && cargo build
+
+    echo "✅ Setup complete!"
+
+# Install dependencies only
+install:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.instantiate()'
+    cd src/rust && cargo build
+
+# Run all tests
+test:
+    @just test-julia
+    @just test-rust
+
+# Run Julia tests
+test-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.test()'
+
+# Run Rust tests
+test-rust:
+    cd src/rust && cargo test --verbose
+
+# Run tests with coverage
+coverage:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.add("Coverage"); using Coverage; coverage = process_folder(); covered_lines, total_lines = get_summary(coverage); println("Coverage: ", covered_lines/total_lines * 100, "%")'
+    @echo "📊 Julia coverage complete"
+
+# Format code
+fmt:
+    @just fmt-julia
+    @just fmt-rust
+
+# Format Julia code
+fmt-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter"); using JuliaFormatter; format("src"); format("../../../tests/julia")'
+
+# Format Rust code
+fmt-rust:
+    cd src/rust && cargo fmt
+
+# Lint code
+lint:
+    @just lint-julia
+    @just lint-rust
+
+# Lint Julia code
+lint-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.add("Lint"); using Lint; lintpkg("RobotVacuum")' || true
+    @echo "✅ Julia lint complete"
+
+# Lint Rust code
+lint-rust:
+    cd src/rust && cargo clippy -- -D warnings
+
+# Run security checks
+security:
+    @just security-julia
+    @just security-rust
+    @just security-secrets
+    @just security-containers
+
+# Security: Julia
+security-julia:
+    @echo "🔒 Running Julia security checks..."
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.audit()' || true
+
+# Security: Rust
+security-rust:
+    cd src/rust && cargo audit || true
+
+# Security: Secret detection
+security-secrets:
+    gitleaks detect --source . --verbose || true
+
+# Security: Container scanning
+security-containers:
+    trivy fs . --severity HIGH,CRITICAL || true
+
+# Run all quality checks
+quality: fmt lint security test
+
+# Build Julia package
+build-julia:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.build()'
+
+# Build Rust binary
+build-rust:
+    cd src/rust && cargo build --release
+
+# Build containers
+build-containers:
+    podman build -f docker/Containerfile -t robot-vacuum:latest .
+
+# Build everything
+build: build-julia build-rust build-containers
+
+# Run Julia simulator
+run-julia:
+    julia --project=src/julia/RobotVacuum src/julia/main.jl
+
+# Run Rust simulator
+run-rust:
+    cd src/rust && cargo run --release
+
+# Run GraphQL server (Julia)
+run-api:
+    julia --project=src/julia/RobotVacuum src/julia/graphql_server.jl
+
+# Start all services with compose
+up:
+    podman-compose -f docker/compose.yaml up -d
+
+# Start development services
+up-dev:
+    podman-compose -f docker/compose.yaml --profile dev up -d
+
+# Start with monitoring
+up-monitoring:
+    podman-compose -f docker/compose.yaml --profile monitoring up -d
+
+# Stop all services
+down:
+    podman-compose -f docker/compose.yaml down
+
+# View logs
+logs:
+    podman-compose -f docker/compose.yaml logs -f
+
+# Clean build artifacts
+clean:
+    rm -rf build/ dist/ *.egg-info
+    rm -rf htmlcov/ .coverage coverage.xml
+    rm -rf .pytest_cache/ .mypy_cache/
+    rm -rf src/rust/target/
+    find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+    find . -type f -name "*.pyc" -delete 2>/dev/null || true
+
+# Deep clean (including venv)
+clean-all: clean
+    rm -rf venv/
+
+# Run pre-commit hooks manually
+pre-commit:
+    pre-commit run --all-files
+
+# Validate RSR compliance
+validate:
+    @just validate-rsr
+
+# RSR Framework validation
+validate-rsr:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "🔍 Validating RSR Framework compliance..."
+    echo ""
+
+    # Check required files
+    echo "📄 Checking required files..."
+    files=(
+        "README.md"
+        "LICENSE.txt"
+        "SECURITY.md"
+        "CONTRIBUTING.md"
+        "CODE_OF_CONDUCT.md"
+        "MAINTAINERS.md"
+        "CHANGELOG.md"
+        ".well-known/security.txt"
+        ".well-known/ai.txt"
+        ".well-known/humans.txt"
+    )
+
+    missing=0
+    for file in "${files[@]}"; do
+        if [ -f "$file" ]; then
+            echo "  ✅ $file"
+        else
+            echo "  ❌ $file (missing)"
+            missing=$((missing + 1))
+        fi
+    done
+
+    echo ""
+    echo "📊 RSR Compliance Summary:"
+    echo "  Required files: $((${#files[@]} - missing))/${#files[@]}"
+
+    if [ $missing -eq 0 ]; then
+        echo "  ✅ All required files present"
+    else
+        echo "  ⚠️  $missing file(s) missing"
+    fi
+
+    # Check test coverage
+    echo ""
+    echo "🧪 Running tests for coverage check..."
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.test()' || true
+
+    echo ""
+    echo "🔒 Security checks..."
+    trivy fs . --severity CRITICAL --quiet || echo "  ⚠️  Some vulnerabilities found"
+
+    echo ""
+    if [ $missing -eq 0 ]; then
+        echo "✅ RSR Framework compliance: PASS"
+        exit 0
+    else
+        echo "⚠️  RSR Framework compliance: INCOMPLETE"
+        exit 1
+    fi
+
+# Generate documentation
+docs:
+    cd docs && sphinx-build -b html . _build/html
+
+# Serve documentation
+docs-serve:
+    cd docs/_build/html && julia -e 'using HTTP; HTTP.serve(HTTP.Files.FileServer("."), "0.0.0.0", 8080)'
+
+# Create new release
+release VERSION:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "📦 Creating release {{VERSION}}..."
+
+    # Update version in files
+    echo "{{VERSION}}" > VERSION
+
+    # Run tests
+    just test
+
+    # Build artifacts
+    just build
+
+    # Create git tag
+    git tag -a "v{{VERSION}}" -m "Release {{VERSION}}"
+
+    echo "✅ Release {{VERSION}} ready!"
+    echo "Push with: git push origin v{{VERSION}}"
+
+# Benchmark Rust code
+benchmark:
+    cd src/rust && cargo bench
+
+# Profile Julia code
+profile:
+    julia --project=src/julia/RobotVacuum --track-allocation=user src/julia/main.jl
+    @echo "📊 Profile data generated"
+
+# Check dependencies for updates
+deps-check:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.status()'
+    cd src/rust && cargo outdated || cargo install cargo-outdated && cargo outdated
+
+# Update dependencies
+deps-update:
+    cd src/julia/RobotVacuum && julia --project=. -e 'using Pkg; Pkg.update()'
+    cd src/rust && cargo update
+
+# Docker/Podman helpers
+container-build:
+    podman build -f docker/Containerfile -t robot-vacuum:latest .
+
+container-run:
+    podman run -p 8000:8000 robot-vacuum:latest
+
+container-shell:
+    podman run -it robot-vacuum:latest /bin/bash
+
+# Salt states
+salt-dev:
+    salt-call --local state.apply development
+
+salt-cicd:
+    salt-call --local state.apply cicd
+
+salt-monitoring:
+    salt-call --local state.apply monitoring
+
+# Generate SBOM
+sbom:
+    syft dir:. -o cyclonedx-json > sbom.json
+    @echo "📋 SBOM generated: sbom.json"
+
+# Sign artifacts (requires GPG)
+sign FILE:
+    gpg --detach-sign --armor {{FILE}}
+    @echo "✍️  Signed: {{FILE}}.asc"
+
+# Verify signatures
+verify FILE:
+    gpg --verify {{FILE}}.asc {{FILE}}
+
+# Check for TODOs
+todos:
+    rg "TODO|FIXME|XXX|HACK" --type julia --type rust || echo "No TODOs found!"
+
+# Count lines of code
+loc:
+    @echo "📊 Lines of Code:"
+    @echo "Julia:"
+    @find src/julia -name "*.jl" | xargs wc -l | tail -1
+    @echo "Rust:"
+    @find src/rust/src -name "*.rs" | xargs wc -l | tail -1
+    @echo "Total:"
+    @find src -name "*.jl" -o -name "*.rs" | xargs wc -l | tail -1
+
+# Show project statistics
+stats:
+    @just loc
+    @echo ""
+    @echo "📈 Git Statistics:"
+    @git log --oneline | wc -l | xargs echo "Commits:"
+    @git ls-files | wc -l | xargs echo "Files:"
+    @echo ""
+    @echo "🧪 Test Statistics:"
+    @find tests/julia -name "test_*.jl" | wc -l | xargs echo "Julia test files:"
+    @find src/rust -name "*.rs" -exec grep -l "#\[test\]" {} \; | wc -l | xargs echo "Rust test files:"
+
+# Help - show all available recipes
+help:
+    @just --list --unsorted
+
+# Run panic-attacker pre-commit scan
+assail:
+    @command -v panic-attack >/dev/null 2>&1 && panic-attack assail . || echo "panic-attack not found — install from https://github.com/hyperpolymath/panic-attacker"
+
+# Self-diagnostic — checks dependencies, permissions, paths
+doctor:
+    @echo "Running diagnostics for robot-vacuum-cleaner..."
+    @echo "Checking required tools..."
+    @command -v just >/dev/null 2>&1 && echo "  [OK] just" || echo "  [FAIL] just not found"
+    @command -v git >/dev/null 2>&1 && echo "  [OK] git" || echo "  [FAIL] git not found"
+    @echo "Checking for hardcoded paths..."
+    @grep -rn '$HOME\|$ECLIPSE_DIR' --include='*.rs' --include='*.ex' --include='*.res' --include='*.gleam' --include='*.sh' . 2>/dev/null | head -5 || echo "  [OK] No hardcoded paths"
+    @echo "Diagnostics complete."
+
+# Auto-repair common issues
+heal:
+    @echo "Attempting auto-repair for robot-vacuum-cleaner..."
+    @echo "Fixing permissions..."
+    @find . -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+    @echo "Cleaning stale caches..."
+    @rm -rf .cache/stale 2>/dev/null || true
+    @echo "Repair complete."
+
+# Guided tour of key features
+tour:
+    @echo "=== robot-vacuum-cleaner Tour ==="
+    @echo ""
+    @echo "1. Project structure:"
+    @ls -la
+    @echo ""
+    @echo "2. Available commands: just --list"
+    @echo ""
+    @echo "3. Read README.adoc for full overview"
+    @echo "4. Read EXPLAINME.adoc for architecture decisions"
+    @echo "5. Run 'just doctor' to check your setup"
+    @echo ""
+    @echo "Tour complete! Try 'just --list' to see all available commands."
+
+# Open feedback channel with diagnostic context
+help-me:
+    @echo "=== robot-vacuum-cleaner Help ==="
+    @echo "Platform: $(uname -s) $(uname -m)"
+    @echo "Shell: $SHELL"
+    @echo ""
+    @echo "To report an issue:"
+    @echo "  https://github.com/hyperpolymath/robot-vacuum-cleaner/issues/new"
+    @echo ""
+    @echo "Include the output of 'just doctor' in your report."
+
+
+# Print the current CRG grade (reads from READINESS.md '**Current Grade:** X' line)
+crg-grade:
+    @grade=$$(grep -oP '(?<=\*\*Current Grade:\*\* )[A-FX]' READINESS.md 2>/dev/null | head -1); \
+    [ -z "$$grade" ] && grade="X"; \
+    echo "$$grade"
+
+# Generate a shields.io badge markdown for the current CRG grade
+# Looks for '**Current Grade:** X' in READINESS.md; falls back to X
+crg-badge:
+    @grade=$$(grep -oP '(?<=\*\*Current Grade:\*\* )[A-FX]' READINESS.md 2>/dev/null | head -1); \
+    [ -z "$$grade" ] && grade="X"; \
+    case "$$grade" in \
+      A) color="brightgreen" ;; B) color="green" ;; C) color="yellow" ;; \
+      D) color="orange" ;; E) color="red" ;; F) color="critical" ;; \
+      *) color="lightgrey" ;; esac; \
+    echo "[![CRG $$grade](https://img.shields.io/badge/CRG-$$grade-$$color?style=flat-square)](https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades)"
