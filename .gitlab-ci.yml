@@ -9,7 +9,6 @@ variables:
   CONTAINER_IMAGE: $CI_REGISTRY_IMAGE
   TRIVY_VERSION: "latest"
   SONAR_SCANNER_VERSION: "5.0"
-
 # Define stages
 stages:
   - prep
@@ -20,14 +19,12 @@ stages:
   - scan
   - deploy
   - notify
-
 # Cache configuration
 cache:
   paths:
     - .cache/julia
     - .cache/cargo
     - target/
-
 # Default settings
 default:
   interruptible: true
@@ -36,11 +33,9 @@ default:
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
-
 # ============================================================================
 # PREPARATION STAGE
 # ============================================================================
-
 install:julia:
   stage: prep
   image: julia:${JULIA_VERSION}
@@ -55,20 +50,17 @@ install:julia:
     key: ${CI_COMMIT_REF_SLUG}-julia
     paths:
       - .cache/julia
-
 # ============================================================================
 # QUALITY STAGE
 # ============================================================================
-
 format:julia:
   stage: quality
   image: julia:${JULIA_VERSION}
   needs: ["install:julia"]
   script:
     - cd src/julia/RobotVacuum
-    - julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter"); using JuliaFormatter; exit(format("src"; overwrite=false) ? 0 : 1)'
+    - julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter"); using JuliaFormatter; exit(format("src"; overwrite=false) ? 0: 1)'
   allow_failure: true
-
 lint:julia:
   stage: quality
   image: julia:${JULIA_VERSION}
@@ -77,7 +69,6 @@ lint:julia:
     - cd src/julia/RobotVacuum
     - julia --project=. -e 'using Pkg; Pkg.add("Lint"); using Lint; lintpkg("RobotVacuum")'
   allow_failure: true
-
 format:rust:
   stage: quality
   image: rust:${RUST_VERSION}
@@ -85,7 +76,6 @@ format:rust:
     - cd src/rust
     - cargo fmt --all -- --check
   allow_failure: false
-
 lint:clippy:
   stage: quality
   image: rust:${RUST_VERSION}
@@ -94,11 +84,9 @@ lint:clippy:
     - rustup component add clippy
     - cargo clippy --all-targets --all-features -- -D warnings
   allow_failure: true
-
 # ============================================================================
 # SECURITY STAGE
 # ============================================================================
-
 security:trivy-fs:
   stage: security
   image:
@@ -112,20 +100,14 @@ security:trivy-fs:
       container_scanning: trivy-fs-report.json
     expire_in: 1 week
   allow_failure: true
-
-security:gitleaks:
   stage: security
   image:
-    name: zricethezav/gitleaks:latest
     entrypoint: [""]
   script:
-    - gitleaks detect --source . --verbose --report-format json --report-path gitleaks-report.json
   artifacts:
     reports:
-      secret_detection: gitleaks-report.json
     expire_in: 1 week
   allow_failure: true
-
 security:cargo-audit:
   stage: security
   image: rust:${RUST_VERSION}
@@ -138,7 +120,6 @@ security:cargo-audit:
       - cargo-audit-report.json
     expire_in: 1 week
   allow_failure: true
-
 security:julia-audit:
   stage: security
   image: julia:${JULIA_VERSION}
@@ -147,11 +128,9 @@ security:julia-audit:
     - cd src/julia/RobotVacuum
     - julia --project=. -e 'using Pkg; Pkg.audit()'
   allow_failure: true
-
 # ============================================================================
 # TEST STAGE
 # ============================================================================
-
 test:julia:
   stage: test
   image: julia:${JULIA_VERSION}
@@ -169,21 +148,18 @@ test:julia:
     paths:
       - src/julia/RobotVacuum/coverage/
     expire_in: 1 week
-
 test:julia:1.9:
   extends: test:julia
   image: julia:1.9
   parallel:
     matrix:
       - JULIA_VERSION: ["1.9"]
-
 test:julia:1.10:
   extends: test:julia
   image: julia:1.10
   parallel:
     matrix:
       - JULIA_VERSION: ["1.10"]
-
 test:rust:
   stage: test
   image: rust:${RUST_VERSION}
@@ -195,7 +171,6 @@ test:rust:
     reports:
       junit: src/rust/target/test-results.xml
     expire_in: 1 week
-
 test:rust:coverage:
   stage: test
   image: rust:${RUST_VERSION}
@@ -214,11 +189,9 @@ test:rust:coverage:
       - src/rust/coverage/
     expire_in: 1 week
   allow_failure: true
-
 # ============================================================================
 # BUILD STAGE
 # ============================================================================
-
 build:julia:
   stage: build
   image: julia:${JULIA_VERSION}
@@ -230,7 +203,6 @@ build:julia:
     paths:
       - src/julia/RobotVacuum/
     expire_in: 1 day
-
 build:rust:
   stage: build
   image: rust:${RUST_VERSION}
@@ -242,7 +214,6 @@ build:rust:
     paths:
       - src/rust/target/release/robot-vacuum
     expire_in: 1 week
-
 build:container:
   stage: build
   image:
@@ -251,21 +222,14 @@ build:container:
   needs: ["build:julia", "build:rust"]
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor
-      --context $CI_PROJECT_DIR
-      --dockerfile $CI_PROJECT_DIR/docker/Containerfile
-      --destination $CONTAINER_IMAGE:$CI_COMMIT_SHA
-      --destination $CONTAINER_IMAGE:latest
-      --cache=true
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/docker/Containerfile --destination $CONTAINER_IMAGE:$CI_COMMIT_SHA --destination $CONTAINER_IMAGE:latest --cache=true
   only:
     - main
     - develop
     - /^claude\/.*/
-
 # ============================================================================
 # SCAN STAGE
 # ============================================================================
-
 scan:container:
   stage: scan
   image:
@@ -284,7 +248,6 @@ scan:container:
     - main
     - develop
     - /^claude\/.*/
-
 scan:grype:
   stage: scan
   image:
@@ -303,7 +266,6 @@ scan:grype:
     - main
     - develop
     - /^claude\/.*/
-
 sonarqube:
   stage: scan
   image:
@@ -318,22 +280,14 @@ sonarqube:
     paths:
       - .sonar/cache
   script:
-    - sonar-scanner
-      -Dsonar.projectKey=robot-vacuum-cleaner
-      -Dsonar.sources=src/
-      -Dsonar.tests=tests/
-      -Dsonar.host.url=${SONAR_HOST_URL}
-      -Dsonar.login=${SONAR_TOKEN}
-      -Dsonar.coverage.reportPaths=src/julia/RobotVacuum/coverage.xml,src/rust/coverage/cobertura.xml
+    - sonar-scanner -Dsonar.projectKey=robot-vacuum-cleaner -Dsonar.sources=src/ -Dsonar.tests=tests/ -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN} -Dsonar.coverage.reportPaths=src/julia/RobotVacuum/coverage.xml,src/rust/coverage/cobertura.xml
   only:
     - main
     - develop
   allow_failure: true
-
 # ============================================================================
 # DEPLOY STAGE
 # ============================================================================
-
 deploy:staging:
   stage: deploy
   image: alpine:latest
@@ -343,14 +297,13 @@ deploy:staging:
   script:
     - echo "Deploying to staging environment..."
     - echo "Container image: $CONTAINER_IMAGE:$CI_COMMIT_SHA"
-    # Add actual deployment commands here
+      # Add actual deployment commands here
   environment:
     name: staging
     url: https://staging.robot-vacuum.example.com
   only:
     - develop
   when: manual
-
 deploy:production:
   stage: deploy
   image: alpine:latest
@@ -360,18 +313,16 @@ deploy:production:
   script:
     - echo "Deploying to production environment..."
     - echo "Container image: $CONTAINER_IMAGE:$CI_COMMIT_SHA"
-    # Add actual deployment commands here
+      # Add actual deployment commands here
   environment:
     name: production
     url: https://robot-vacuum.example.com
   only:
     - main
   when: manual
-
 # ============================================================================
 # NOTIFY STAGE
 # ============================================================================
-
 notify:success:
   stage: notify
   image: alpine:latest
@@ -385,7 +336,6 @@ notify:success:
   only:
     - main
     - develop
-
 notify:failure:
   stage: notify
   image: alpine:latest
@@ -399,11 +349,9 @@ notify:failure:
   only:
     - main
     - develop
-
 # ============================================================================
 # SPECIAL JOBS
 # ============================================================================
-
 pages:
   stage: deploy
   needs: ["test:julia", "test:rust:coverage"]
@@ -417,7 +365,6 @@ pages:
       - public
   only:
     - main
-
 release:
   stage: deploy
   image: registry.gitlab.com/gitlab-org/release-cli:latest
@@ -433,3 +380,8 @@ release:
           url: '${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/file/src/rust/target/release/robot-vacuum'
   only:
     - tags
+trufflehog:
+  stage: security
+  image: trufflesecurity/trufflehog:latest
+  script:
+    - trufflehog git file://. --only-verified --fail

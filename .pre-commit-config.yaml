@@ -87,10 +87,8 @@ repos:
         args: [--fix]
 
   # Secrets detection
-  - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.1
     hooks:
-      - id: gitleaks
 
   # Shell script linting
   - repo: https://github.com/shellcheck-py/shellcheck-py

@@ -100,7 +100,6 @@ security-rust:
 
 # Security: Secret detection
 security-secrets:
-    gitleaks detect --source . --verbose || true
 
 # Security: Container scanning
 security-containers:
@@ -415,3 +414,6 @@ crg-badge:
       D) color="orange" ;; E) color="red" ;; F) color="critical" ;; \
       *) color="lightgrey" ;; esac; \
     echo "[![CRG $$grade](https://img.shields.io/badge/CRG-$$grade-$$color?style=flat-square)](https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades)"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

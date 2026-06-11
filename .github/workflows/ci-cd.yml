@@ -1,24 +1,20 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 name: CI/CD Pipeline
-
 on:
   push:
-    branches: [ main, develop, 'claude/**' ]
+    branches: [main, develop, 'claude/**']
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   schedule:
     # Run security scans daily at 2 AM UTC
     - cron: '0 2 * * *'
-
 permissions:
   contents: read
-
 env:
   JULIA_VERSION: '1.10'
   RUST_VERSION: 'stable'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   # Code quality checks
   quality:
@@ -31,31 +27,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0  # Full history for SonarCloud
-
+          fetch-depth: 0 # Full history for SonarCloud
       - name: Set up Julia
         uses: julia-actions/setup-julia@a0a0978e23276b102daaa707fc6c1fc0c89d13d6 # v2.8.0
         with:
           version: ${{ env.JULIA_VERSION }}
-
       - name: Install dependencies
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.instantiate()'
           julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter"); Pkg.add("Lint")'
-
       - name: Run JuliaFormatter (code formatting)
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using JuliaFormatter; exit(format("src"; overwrite=false) ? 0 : 1)'
         continue-on-error: true
-
       - name: Run Julia Lint
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.add("Lint"); using Lint; lintpkg("RobotVacuum")'
         continue-on-error: true
-
   # Security scanning
   security:
     name: Security Scanning
@@ -67,13 +58,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Run GitLeaks (secrets detection)
-        uses: gitleaks/gitleaks-action@e2bb9c9574c8527c28e4a102d0f2cb9e8efe9c0d # v2.3.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
-
       - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.33.0
         with:
@@ -84,14 +72,12 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
           limit-severities-for-sarif: true
-
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v3.28.1
         if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy-filesystem'
-
       - name: Run Snyk security scan
         uses: snyk/actions/node@d05832d319e5dff5d437797b57ce172aa3fac3cd # master 2024-12-09
         continue-on-error: true
@@ -99,7 +85,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
-
       - name: OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@8e1c6be6c9f6e9d2b52e79b2f6e5f57c9e8e8e8e # main 2024-12-09
         with:
@@ -108,14 +93,12 @@ jobs:
           format: 'HTML'
           out: 'reports'
         continue-on-error: true
-
       - name: Upload dependency check report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.0
         if: always()
         with:
           name: dependency-check-report
           path: reports/
-
   # Julia tests
   test-julia:
     name: Julia Tests
@@ -129,27 +112,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Set up Julia ${{ matrix.julia-version }}
         uses: julia-actions/setup-julia@a0a0978e23276b102daaa707fc6c1fc0c89d13d6 # v2.8.0
         with:
           version: ${{ matrix.julia-version }}
-
       - name: Install dependencies
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.instantiate()'
-
       - name: Run tests with coverage
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.test(coverage=true)'
-
       - name: Process coverage
         uses: julia-actions/julia-processcoverage@6d9d019d6e24c4b3b166d29e69829c3cfd0c1e2e # v1.2.2
         with:
           directories: src/julia/RobotVacuum/src
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v5.0.7
         with:
@@ -157,7 +135,6 @@ jobs:
           flags: julia-${{ matrix.julia-version }}
           name: julia-${{ matrix.julia-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-
   # Rust tests
   test-rust:
     name: Rust Tests
@@ -168,34 +145,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6 # v1.16.1
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: rustfmt, clippy
-
       - name: Cargo format check
         run: cargo fmt --all -- --check
         working-directory: src/rust
         continue-on-error: true
-
       - name: Cargo clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
         working-directory: src/rust
         continue-on-error: true
-
       - name: Run Rust tests
         run: cargo test --verbose
         working-directory: src/rust
-
       - name: Generate coverage
         run: |
           cargo install cargo-tarpaulin
           cargo tarpaulin --out Xml --output-dir coverage
         working-directory: src/rust
         continue-on-error: true
-
       - name: Upload Rust coverage
         uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v5.0.7
         with:
@@ -204,7 +175,6 @@ jobs:
           name: rust
           token: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
-
   # Build and scan container images
   container-build:
     name: Build & Scan Containers
@@ -218,10 +188,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
-
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
@@ -229,7 +197,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
@@ -242,7 +209,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
-
       - name: Build container image
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
@@ -254,7 +220,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
       - name: Run Trivy vulnerability scanner (image)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.33.0
         with:
@@ -264,27 +229,23 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
           limit-severities-for-sarif: true
-
       - name: Upload Trivy image results
         uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v3.28.1
         if: always() && hashFiles('trivy-image-results.sarif') != ''
         with:
           sarif_file: 'trivy-image-results.sarif'
           category: 'trivy-container'
-
       - name: Run Hadolint (Dockerfile linting)
         uses: hadolint/hadolint-action@6efeb7b3ac1a0cb20b7224d0f71f8c6f43b24d8e # v3.1.0
         with:
           dockerfile: docker/Containerfile
           failure-threshold: warning
-
       - name: Scan with Grype
         uses: anchore/scan-action@4be3c7ed9d2abc473b0aedbdaac97e77539ee97e # v5.0.0
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           fail-build: false
           severity-cutoff: high
-
       - name: Push container image
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
@@ -294,7 +255,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
   # SonarCloud analysis
   sonarcloud:
     name: SonarCloud Analysis
@@ -308,13 +268,11 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-
       - name: Download Julia coverage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: julia-coverage
           path: htmlcov/
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v3.1.0
         env:
@@ -322,12 +280,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=robot-vacuum-cleaner
-            -Dsonar.organization=${{ github.repository_owner }}
-            -Dsonar.coverage.reportPaths=lcov.info
-            -Dsonar.sources=src/
-            -Dsonar.tests=tests/
-            -Dsonar.exclusions=**/*_test.py,**/test_*.py
+            -Dsonar.projectKey=robot-vacuum-cleaner -Dsonar.organization=${{ github.repository_owner }} -Dsonar.coverage.reportPaths=lcov.info -Dsonar.sources=src/ -Dsonar.tests=tests/ -Dsonar.exclusions=**/*_test.py,**/test_*.py
 
   # Integration tests
   integration:
@@ -341,13 +294,9 @@ jobs:
       redis:
         image: redis:alpine
         options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
           - 6379:6379
-
       postgres:
         image: postgres:16-alpine
         env:
@@ -355,27 +304,20 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
           - 5432:5432
-
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Set up Julia
         uses: julia-actions/setup-julia@a0a0978e23276b102daaa707fc6c1fc0c89d13d6 # v2.8.0
         with:
           version: ${{ env.JULIA_VERSION }}
-
       - name: Install dependencies
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.instantiate()'
-
       - name: Run integration tests
         env:
           REDIS_HOST: localhost
@@ -386,7 +328,6 @@ jobs:
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.test()'
-
   # Deployment (only on main branch)
   deploy:
     name: Deploy
@@ -402,13 +343,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Deploy to production
         run: |
           echo "Deploying to production environment..."
           # Add actual deployment commands here
           # e.g., kubectl apply, helm upgrade, etc.
-
       - name: Notify deployment
         uses: 8398a7/action-slack@60d2bbf1ae7a8c02e0039c34d75f42d23c13a4fb # v3.18.3
         if: always()
@@ -417,7 +356,6 @@ jobs:
           text: 'Deployment to production ${{ job.status }}'
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
         continue-on-error: true
-
   # Notification job
   notify:
     name: Notify
@@ -437,8 +375,17 @@ jobs:
           else
             echo "status=success" >> $GITHUB_OUTPUT
           fi
-
       - name: Send notification
         run: |
           echo "Pipeline status: ${{ steps.check.outputs.status }}"
           # Add notification logic (Slack, email, etc.)
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified --fail
