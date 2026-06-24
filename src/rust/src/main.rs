@@ -4,7 +4,7 @@
 use clap::Parser;
 use env_logger::Env;
 use robot_vacuum_cleaner::{Robot, Environment, Simulator, Position};
-use robot_vacuum_cleaner::simulator::{SimulationConfig, SimulationResults};
+use robot_vacuum_cleaner::simulator::SimulationConfig;
 
 /// Robot Vacuum Cleaner Simulator
 #[derive(Parser, Debug)]
