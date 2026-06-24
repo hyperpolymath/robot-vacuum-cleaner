@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  JULIA_VERSION: '1.10'
+  JULIA_VERSION: '1.12'
   RUST_VERSION: 'stable'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -41,18 +41,12 @@ jobs:
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using Pkg; Pkg.instantiate()'
-          julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter"); Pkg.add("Lint")'
+          julia --project=. -e 'using Pkg; Pkg.add("JuliaFormatter")'
 
       - name: Run JuliaFormatter (code formatting)
         run: |
           cd src/julia/RobotVacuum
           julia --project=. -e 'using JuliaFormatter; exit(format("src"; overwrite=false) ? 0 : 1)'
-        continue-on-error: true
-
-      - name: Run Julia Lint
-        run: |
-          cd src/julia/RobotVacuum
-          julia --project=. -e 'using Pkg; Pkg.add("Lint"); using Lint; lintpkg("RobotVacuum")'
         continue-on-error: true
 
   # Security scanning
@@ -122,7 +116,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        julia-version: ['1.9', '1.10', 'nightly']
+        julia-version: ['1.12', 'nightly']
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
