@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MPL-2.0
 //! Pathfinding algorithm benchmarks
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
