@@ -11,6 +11,7 @@ on:
     - cron: '0 2 * * *'
 
 permissions:
+  actions: read
   contents: read
 
 env:
