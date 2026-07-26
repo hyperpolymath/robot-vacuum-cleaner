@@ -1,25 +1,18 @@
-;; robot-vacuum-cleaner - Guix Package Definition
-;; Run: guix shell -D -f guix.scm
+; SPDX-License-Identifier: MPL-2.0
+;; guix.scm — GNU Guix package definition for squisher-corpus
+;; Usage: guix shell -f guix.scm
 
 (use-modules (guix packages)
-             (guix gexp)
-             (guix git-download)
              (guix build-system gnu)
-             ((guix licenses) #:prefix license:)
-             (gnu packages base))
+             (guix licenses))
 
-(define-public robot_vacuum_cleaner
-  (package
-    (name "robot-vacuum-cleaner")
-    (version "0.1.0")
-    (source (local-file "." "robot-vacuum-cleaner-checkout"
-                        #:recursive? #t
-                        #:select? (git-predicate ".")))
-    (build-system gnu-build-system)
-    (synopsis "Guix channel/infrastructure")
-    (description "Guix channel/infrastructure - part of the RSR ecosystem.")
-    (home-page "https://github.com/hyperpolymath/robot-vacuum-cleaner")
-    (license license:agpl3+)))
-
-;; Return package for guix shell
-robot_vacuum_cleaner
+(package
+  (name "squisher-corpus")
+  (version "0.1.0")
+  (source #f)
+  (build-system gnu-build-system)
+  (synopsis "squisher-corpus")
+  (description "squisher-corpus — part of the hyperpolymath ecosystem.")
+  (home-page "https://github.com/hyperpolymath/squisher-corpus")
+  (license ((@@ (guix licenses) license) "PMPL-1.0-or-later"
+             "https://github.com/hyperpolymath/palimpsest-license")))
