@@ -1,1 +1,4 @@
 CLAUDE.md
+
+.githooks/
+flake.nix
