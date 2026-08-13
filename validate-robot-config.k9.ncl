@@ -11,7 +11,9 @@ leash = 'Yard
 
 pedigree = {
     name = "validate-robot-config.k9.ncl",
-    security = { leash = "Yard" },
+    security = { leash = 'Yard },
+    
+    
   schema_version = "1.0.0",
   component_type = "config-validator",
   author = "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>",
