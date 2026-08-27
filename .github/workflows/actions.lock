@@ -3,20 +3,25 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.2'
 workflows:
+    '.github/workflows/governance.yml': []
+    '.github/workflows/hypatia-scan.yml': []
+    '.github/workflows/mirror.yml': []
+    '.github/workflows/scorecard.yml': []
+    '.github/workflows/secret-scanner.yml': []
     '.github/workflows/boj-build.yml':
-        - 'actions/checkout@v7.0.0'
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/casket-pages.yml':
         - 'actions/cache@v6.1.0'
-        - 'actions/checkout@v7.0.0'
+        - 'actions/checkout@v7.0.1'
         - 'actions/configure-pages@v6.0.0'
         - 'actions/deploy-pages@v5.0.0'
         - 'actions/upload-pages-artifact@v5.0.0'
-        - 'haskell-actions/setup@v2.11.0'
+        - 'haskell-actions/setup@v2.12.0'
     '.github/workflows/ci-cd.yml':
         - '8398a7/action-slack@v3.19.0'
         - 'actions-rust-lang/setup-rust-toolchain@v1.17.0'
-        - 'actions/attest-build-provenance@v4.1.1'
-        - 'actions/checkout@v7.0.0'
+        - 'actions/attest-build-provenance@v4.2.2'
+        - 'actions/checkout@v7.0.1'
         - 'actions/download-artifact@v8.0.1'
         - 'actions/upload-artifact@v7.0.1'
         - 'anchore/scan-action@v7.4.0'
@@ -24,33 +29,33 @@ workflows:
         - 'codecov/codecov-action@v7.0.0'
         - 'dependency-check/dependency-check_action@1.1.0'
         - 'docker/build-push-action@v7.3.0'
-        - 'docker/login-action@v4.4.0'
+        - 'docker/login-action@v4.6.0'
         - 'docker/metadata-action@v6.2.0'
-        - 'docker/setup-buildx-action@v4.2.0'
-        - 'github/codeql-action@v4.37.1'
+        - 'docker/setup-buildx-action@v4.3.0'
+        - 'github/codeql-action@v4.37.7'
         - 'gitleaks/gitleaks-action@v3.0.0'
-        - 'hadolint/hadolint-action@v3.3.0'
+        - 'hadolint/hadolint-action@v3.4.0'
         - 'julia-actions/julia-processcoverage@v1.2.2'
         - 'julia-actions/setup-julia@v3.0.2'
         - 'snyk/actions@v1.0.0'
         - 'sonarsource/sonarcloud-github-action@v5.0.0'
     '.github/workflows/codeql.yml':
-        - 'actions/checkout@v7.0.0'
-        - 'github/codeql-action@v4.37.1'
+        - 'actions/checkout@v7.0.1'
+        - 'github/codeql-action@v4.37.7'
     '.github/workflows/dependabot-automerge.yml':
         - 'dependabot/fetch-metadata@v3.1.0'
     '.github/workflows/dogfood-gate.yml':
-        - 'actions/checkout@v7.0.0'
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/instant-sync.yml':
         - 'peter-evans/repository-dispatch@v4.0.1'
     '.github/workflows/pages.yml':
-        - 'actions/checkout@v4.4.0'
-        - 'actions/deploy-pages@v4.0.5'
-        - 'actions/upload-pages-artifact@v3.0.1'
+        - 'actions/checkout@v7.0.1'
+        - 'actions/deploy-pages@v5.0.0'
+        - 'actions/upload-pages-artifact@v5.0.0'
     '.github/workflows/push-email-notify.yml':
         - 'dawidd6/action-send-mail@v3.12.0'
     '.github/workflows/workflow-linter.yml':
-        - 'actions/checkout@v7.0.0'
+        - 'actions/checkout@v7.0.1'
 dependencies:
     '8398a7/action-slack@v3.19.0':
         ref: 'v3.19.0'
@@ -64,16 +69,16 @@ dependencies:
         repo_id: 482610590
         uses:
             - 'swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4'
-    'actions/attest-build-provenance@v4.1.1':
-        ref: 'v4.1.1'
-        commit: 'sha1-0f67c3f4856b2e3261c31976d6725780e5e4c373'
+    'actions/attest-build-provenance@v4.2.2':
+        ref: 'v4.2.2'
+        commit: 'sha1-4d101475d8b20a2381f78447822ac1eab6504dd8'
         owner_id: 44036562
         repo_id: 760702757
         uses:
-            - 'actions/attest@a1948c3f048ba23858d222213b7c278aabede763'
-    'actions/attest@a1948c3f048ba23858d222213b7c278aabede763':
-        ref: 'v4.1.1'
-        commit: 'sha1-a1948c3f048ba23858d222213b7c278aabede763'
+            - 'actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d'
+    'actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d':
+        ref: 'v4.2.1'
+        commit: 'sha1-508db95dd578ae2727ebd6217d5ba78e4fbda05d'
         owner_id: 44036562
         repo_id: 760701061
     'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae':
@@ -101,14 +106,9 @@ dependencies:
         commit: 'sha1-8e8c483db84b4bee98b60c0593521ed34d9990e8'
         owner_id: 44036562
         repo_id: 197814629
-    'actions/checkout@v4.4.0':
-        ref: 'v4.4.0'
-        commit: 'sha1-11d5960a326750d5838078e36cf38b85af677262'
-        owner_id: 44036562
-        repo_id: 197814629
-    'actions/checkout@v7.0.0':
-        ref: 'v7.0.0'
-        commit: 'sha1-9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0'
+    'actions/checkout@v7.0.1':
+        ref: 'v7.0.1'
+        commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
         owner_id: 44036562
         repo_id: 197814629
     'actions/configure-pages@v6.0.0':
@@ -116,11 +116,6 @@ dependencies:
         commit: 'sha1-45bfe0192ca1faeb007ade9deae92b16b8254a0d'
         owner_id: 44036562
         repo_id: 513659658
-    'actions/deploy-pages@v4.0.5':
-        ref: 'v4.0.5'
-        commit: 'sha1-d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e'
-        owner_id: 44036562
-        repo_id: 438112499
     'actions/deploy-pages@v5.0.0':
         ref: 'v5.0.0'
         commit: 'sha1-cd2ce8fcbc39b97be8ca5fce6e763baed58fa128'
@@ -141,23 +136,11 @@ dependencies:
         commit: 'sha1-bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
         owner_id: 44036562
         repo_id: 192625955
-    'actions/upload-artifact@v4':
-        ref: 'v4'
-        commit: 'sha1-ea165f8d65b6e75b540449e92b4886f43607fa02'
-        owner_id: 44036562
-        repo_id: 192625955
     'actions/upload-artifact@v7.0.1':
         ref: 'v7.0.1'
         commit: 'sha1-043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
         owner_id: 44036562
         repo_id: 192625955
-    'actions/upload-pages-artifact@v3.0.1':
-        ref: 'v3.0.1'
-        commit: 'sha1-56afc609e74202658d3ffba0e8f6dda462b719fa'
-        owner_id: 44036562
-        repo_id: 496012378
-        uses:
-            - 'actions/upload-artifact@v4'
     'actions/upload-pages-artifact@v5.0.0':
         ref: 'v5.0.0'
         commit: 'sha1-fc324d3547104276b827a68afc52ff2a11cc49c9'
@@ -195,7 +178,7 @@ dependencies:
             - 'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd'
     'dawidd6/action-send-mail@v3.12.0':
         ref: 'v3.12.0'
-        commit: 'sha1-c50dc4cc848ade21f848990889906d804fae78c5'
+        commit: 'sha1-94de994a9f6fffee200243214e17002e2920bb59'
         owner_id: 9713907
         repo_id: 222439721
     'dependabot/fetch-metadata@v3.1.0':
@@ -213,9 +196,9 @@ dependencies:
         commit: 'sha1-53b7df96c91f9c12dcc8a07bcb9ccacbed38856a'
         owner_id: 5429470
         repo_id: 241092383
-    'docker/login-action@v4.4.0':
-        ref: 'v4.4.0'
-        commit: 'sha1-af1e73f918a031802d376d3c8bbc3fe56130a9b0'
+    'docker/login-action@v4.6.0':
+        ref: 'v4.6.0'
+        commit: 'sha1-dbcb813823bdd20940b903addbd779551569679f'
         owner_id: 5429470
         repo_id: 287743349
     'docker/metadata-action@v6.2.0':
@@ -223,14 +206,14 @@ dependencies:
         commit: 'sha1-dc802804100637a589fabce1cb79ff13a1411302'
         owner_id: 5429470
         repo_id: 306769011
-    'docker/setup-buildx-action@v4.2.0':
-        ref: 'v4.2.0'
-        commit: 'sha1-bb05f3f5519dd87d3ba754cc423b652a5edd6d2c'
+    'docker/setup-buildx-action@v4.3.0':
+        ref: 'v4.3.0'
+        commit: 'sha1-37fe631027851001ddb9b187196cc803df7f5f0e'
         owner_id: 5429470
         repo_id: 288485773
-    'github/codeql-action@v4.37.1':
-        ref: 'v4.37.1'
-        commit: 'sha1-7188fc363630916deb702c7fdcf4e481b751f97a'
+    'github/codeql-action@v4.37.7':
+        ref: 'v4.37.7'
+        commit: 'sha1-ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd'
         owner_id: 9919
         repo_id: 259445878
     'gitleaks/gitleaks-action@v3.0.0':
@@ -238,14 +221,14 @@ dependencies:
         commit: 'sha1-e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e'
         owner_id: 90395851
         repo_id: 242854909
-    'hadolint/hadolint-action@v3.3.0':
-        ref: 'v3.3.0'
-        commit: 'sha1-2332a7b74a6de0dda2e2221d575162eba76ba5e5'
+    'hadolint/hadolint-action@v3.4.0':
+        ref: 'v3.4.0'
+        commit: 'sha1-2a66e89f53d0771bb131a7fa31f3136336094aa6'
         owner_id: 34047791
         repo_id: 212438777
-    'haskell-actions/setup@v2.11.0':
-        ref: 'v2.11.0'
-        commit: 'sha1-cd0d9bdd65b20557f41bea4dbe43d0b5fbbfe553'
+    'haskell-actions/setup@v2.12.0':
+        ref: 'v2.12.0'
+        commit: 'sha1-6037f33647c3f17758a2356c80fc4a53d7e0685d'
         owner_id: 75048950
         repo_id: 623796603
     'julia-actions/julia-processcoverage@v1.2.2':
