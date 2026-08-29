@@ -66,7 +66,9 @@ end
 
 Create room with random furniture obstacles.
 """
-function create_room_with_furniture(width::Int, height::Int, num_obstacles::Int=5)::Environment
+function create_room_with_furniture(
+    width::Int, height::Int, num_obstacles::Int=5
+)::Environment
     env = create_empty_room(width, height)
 
     # Add random furniture
