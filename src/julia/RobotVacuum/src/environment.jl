@@ -69,6 +69,7 @@ Create room with random furniture obstacles.
 function create_room_with_furniture(
     width::Int, height::Int, num_obstacles::Int=5
 )::Environment
+    @assert width >= 15 && height >= 15 "Room must be at least 15x15."
     env = create_empty_room(width, height)
 
     # Add random furniture
