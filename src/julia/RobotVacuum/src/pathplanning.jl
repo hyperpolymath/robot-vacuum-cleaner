@@ -19,7 +19,9 @@ end
 
 Find optimal path from start to goal using A*.
 """
-function find_path(planner::AStarPlanner, start::Tuple{Int,Int}, goal::Tuple{Int,Int})::Union{Vector{Tuple{Int,Int}},Nothing}
+function find_path(
+    planner::AStarPlanner, start::Tuple{Int,Int}, goal::Tuple{Int,Int}
+)::Union{Vector{Tuple{Int,Int}},Nothing}
     if !is_valid_position(planner.environment, start[1], start[2]) ||
        !is_valid_position(planner.environment, goal[1], goal[2])
         return nothing
@@ -92,7 +94,9 @@ end
 
 Generate spiral path from center point.
 """
-function generate_spiral(planner::SpiralPlanner, start::Tuple{Int,Int}, max_radius::Int=50)::Vector{Tuple{Int,Int}}
+function generate_spiral(
+    planner::SpiralPlanner, start::Tuple{Int,Int}, max_radius::Int=50
+)::Vector{Tuple{Int,Int}}
     path = [start]
     (x, y) = start
 
