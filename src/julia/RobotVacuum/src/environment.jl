@@ -161,7 +161,7 @@ end
 
 Reset environment to initial state.
 """
-function Base.reset!(env::Environment)
+function RobotVacuum.reset!(env::Environment)
     env.dirt_map .= true
     env.sim_time = 0.0
 end

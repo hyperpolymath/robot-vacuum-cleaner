@@ -62,6 +62,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
+        with:
+          # Gitleaks compares the PR's before/after commit range; retain both
+          # endpoints rather than silently degrading to a partial scan.
+          fetch-depth: 0
 
       - name: Run GitLeaks (secrets detection)
         uses: gitleaks/gitleaks-action@v3.0.0
