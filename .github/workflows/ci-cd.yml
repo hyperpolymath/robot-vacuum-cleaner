@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
+# This workflow is managed by gh actions-lock.
 name: CI/CD Pipeline
 
 on:
@@ -29,12 +31,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0  # Full history for SonarCloud
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v2.8.0
+        uses: julia-actions/setup-julia@v3.0.2
         with:
           version: ${{ env.JULIA_VERSION }}
 
@@ -59,16 +61,16 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Run GitLeaks (secrets detection)
-        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        uses: gitleaks/gitleaks-action@v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
       - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.33.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -79,14 +81,14 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v3.28.1
+        uses: github/codeql-action/upload-sarif@v4.37.7
         if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy-filesystem'
 
       - name: Run Snyk security scan
-        uses: snyk/actions/node@8e119fbb6c251787721d34ba683ed48eba792766 # master 2024-12-09
+        uses: snyk/actions/node@v1.0.0
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -94,7 +96,7 @@ jobs:
           args: --severity-threshold=high
 
       - name: OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@1e54355a8b4c8abaa8cc7d0b70aa655a3bb15a6c # main 2024-12-09
+        uses: dependency-check/Dependency-Check_Action@1.1.0
         with:
           project: 'robot-vacuum-cleaner'
           path: '.'
@@ -103,7 +105,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload dependency check report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.0
+        uses: actions/upload-artifact@v7.0.1
         if: always()
         with:
           name: dependency-check-report
@@ -120,10 +122,10 @@ jobs:
         julia-version: ['1.12', 'nightly']
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Julia ${{ matrix.julia-version }}
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v2.8.0
+        uses: julia-actions/setup-julia@v3.0.2
         with:
           version: ${{ matrix.julia-version }}
 
@@ -138,12 +140,12 @@ jobs:
           julia --project=. -e 'using Pkg; Pkg.test(coverage=true)'
 
       - name: Process coverage
-        uses: julia-actions/julia-processcoverage@03114f09f119417c3242a9fb6e0b722676aedf38 # v1.2.2
+        uses: julia-actions/julia-processcoverage@v1.2.2
         with:
           directories: src/julia/RobotVacuum/src
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v5.0.7
+        uses: codecov/codecov-action@v7.0.0
         with:
           files: lcov.info
           flags: julia-${{ matrix.julia-version }}
@@ -158,10 +160,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: rustfmt, clippy
@@ -188,7 +190,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Rust coverage
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v5.0.7
+        uses: codecov/codecov-action@v7.0.0
         with:
           file: src/rust/coverage/cobertura.xml
           flags: rust
@@ -209,14 +211,14 @@ jobs:
       attestations: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+        uses: docker/setup-buildx-action@v4.3.0
 
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@v4.6.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -224,7 +226,7 @@ jobs:
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        uses: docker/metadata-action@v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -236,7 +238,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build container image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@v7.3.0
         with:
           context: .
           file: ./docker/Containerfile
@@ -248,7 +250,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner (image)
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.33.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           format: 'sarif'
@@ -258,20 +260,20 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy image results
-        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v3.28.1
+        uses: github/codeql-action/upload-sarif@v4.37.7
         if: always() && hashFiles('trivy-image-results.sarif') != ''
         with:
           sarif_file: 'trivy-image-results.sarif'
           category: 'trivy-container'
 
       - name: Run Hadolint (Dockerfile linting)
-        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        uses: hadolint/hadolint-action@v3.4.0
         with:
           dockerfile: docker/Containerfile
           failure-threshold: warning
 
       - name: Scan with Grype
-        uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v5.0.0
+        uses: anchore/scan-action@v7.4.0
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           fail-build: false
@@ -280,7 +282,7 @@ jobs:
       - name: Push container image
         id: push
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@v7.3.0
         with:
           context: .
           file: ./docker/Containerfile
@@ -290,7 +292,7 @@ jobs:
 
       - name: Attest container provenance
         if: github.event_name != 'pull_request'
-        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        uses: actions/attest-build-provenance@v4.2.2
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -305,18 +307,18 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
       - name: Download Julia coverage
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@v8.0.1
         with:
           name: julia-coverage
           path: htmlcov/
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v3.1.0
+        uses: SonarSource/sonarcloud-github-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -363,10 +365,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v2.8.0
+        uses: julia-actions/setup-julia@v3.0.2
         with:
           version: ${{ env.JULIA_VERSION }}
 
@@ -399,7 +401,7 @@ jobs:
       url: https://robot-vacuum.example.com
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Deploy to production
         run: |
@@ -408,7 +410,7 @@ jobs:
           # e.g., kubectl apply, helm upgrade, etc.
 
       - name: Notify deployment
-        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e # v3.18.3
+        uses: 8398a7/action-slack@v3.19.0
         if: always()
         with:
           status: ${{ job.status }}

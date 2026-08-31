@@ -10,6 +10,7 @@ K9!
 leash = 'Yard
 
 pedigree = {
+  name = "validate-robot-config",
   schema_version = "1.0.0",
   component_type = "config-validator",
   author = "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>",

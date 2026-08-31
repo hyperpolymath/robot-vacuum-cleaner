@@ -40,7 +40,9 @@ mutable struct ParticleFilter
 end
 
 function ParticleFilter(num_particles::Int=100)
-    particles = [Particle(Pose(0.0, 0.0, 0.0), 1.0 / num_particles) for _ in 1:num_particles]
+    particles = [
+        Particle(Pose(0.0, 0.0, 0.0), 1.0 / num_particles) for _ in 1:num_particles
+    ]
     ParticleFilter(particles, num_particles)
 end
 
