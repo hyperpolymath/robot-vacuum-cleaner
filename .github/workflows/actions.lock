@@ -20,7 +20,6 @@ workflows:
         - 'actions/upload-pages-artifact@v5.0.0'
         - 'haskell-actions/setup@v2.12.0'
     '.github/workflows/ci-cd.yml':
-        - '8398a7/action-slack@v3.19.0'
         - 'actions-rust-lang/setup-rust-toolchain@v1.17.0'
         - 'actions/attest-build-provenance@v4.2.2'
         - 'actions/checkout@v7.0.1'
@@ -59,11 +58,6 @@ workflows:
     '.github/workflows/workflow-linter.yml':
         - 'actions/checkout@v7.0.1'
 dependencies:
-    '8398a7/action-slack@v3.19.0':
-        ref: 'v3.19.0'
-        commit: 'sha1-77eaa4f1c608a7d68b38af4e3f739dcd8cba273e'
-        owner_id: 8043276
-        repo_id: 202563790
     'actions-rust-lang/setup-rust-toolchain@v1.17.0':
         ref: 'v1.17.0'
         commit: 'sha1-166cdcfd11aee3cb47222f9ddb555ce30ddb9659'
