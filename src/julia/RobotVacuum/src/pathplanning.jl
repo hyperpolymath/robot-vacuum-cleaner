@@ -95,7 +95,7 @@ end
 Generate spiral path from center point.
 """
 function generate_spiral(
-    planner::SpiralPlanner, start::Tuple{Int,Int}, max_radius::Int=50
+    planner::SpiralPlanner, start::Tuple{Int,Int}, max_radius::Int = 50
 )::Vector{Tuple{Int,Int}}
     path = [start]
     (x, y) = start

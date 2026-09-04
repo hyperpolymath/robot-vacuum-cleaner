@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //! Robot vacuum core implementation
 
-use crate::types::{Position, SensorData, RobotStats};
+use crate::types::{Position, RobotStats, SensorData};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -209,13 +209,7 @@ mod tests {
 
     #[test]
     fn test_robot_with_params() {
-        let robot = Robot::with_params(
-            Position::new(5.0, 5.0),
-            200.0,
-            0.5,
-            0.3,
-            3.0,
-        );
+        let robot = Robot::with_params(Position::new(5.0, 5.0), 200.0, 0.5, 0.3, 3.0);
         assert_eq!(robot.battery_capacity, 200.0);
         assert_eq!(robot.cleaning_width, 0.5);
         assert_eq!(robot.speed, 0.3);

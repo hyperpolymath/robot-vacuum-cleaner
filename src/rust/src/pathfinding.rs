@@ -2,8 +2,8 @@
 //! Path finding and coverage planning algorithms
 
 use crate::environment::Environment;
-use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 /// A* pathfinding node
 #[derive(Debug, Clone)]
@@ -203,7 +203,10 @@ mod tests {
         assert!(path_straight.is_some());
 
         // Diagonal path should be shorter
-        assert!(path_diagonal.expect("TODO: handle error").len() < path_straight.expect("TODO: handle error").len());
+        assert!(
+            path_diagonal.expect("TODO: handle error").len()
+                < path_straight.expect("TODO: handle error").len()
+        );
     }
 
     #[test]

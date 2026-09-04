@@ -123,7 +123,9 @@ impl Environment {
 
     /// Get cleaning percentage
     pub fn get_cleaning_percentage(&self) -> f64 {
-        let total_cleanable = self.grid.iter()
+        let total_cleanable = self
+            .grid
+            .iter()
             .filter(|&&cell| cell == CellType::Free as u8)
             .count();
 
@@ -131,10 +133,10 @@ impl Environment {
             return 100.0;
         }
 
-        let cleaned = self.grid.indexed_iter()
-            .filter(|&((y, x), &cell)| {
-                cell == CellType::Free as u8 && !self.dirty_map[[y, x]]
-            })
+        let cleaned = self
+            .grid
+            .indexed_iter()
+            .filter(|&((y, x), &cell)| cell == CellType::Free as u8 && !self.dirty_map[[y, x]])
             .count();
 
         (cleaned as f64 / total_cleanable as f64) * 100.0

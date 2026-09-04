@@ -76,11 +76,13 @@ Create a new robot vacuum cleaner.
 - `speed::Float64=0.2`: Movement speed
 - `sensor_range::Float64=2.0`: Sensor range
 """
-function Robot(position::Position;
-               battery_capacity::Float64=100.0,
-               cleaning_width::Float64=0.3,
-               speed::Float64=0.2,
-               sensor_range::Float64=2.0)
+function Robot(
+    position::Position;
+    battery_capacity::Float64 = 100.0,
+    cleaning_width::Float64 = 0.3,
+    speed::Float64 = 0.2,
+    sensor_range::Float64 = 2.0,
+)
     Robot(
         position,
         battery_capacity,
@@ -96,7 +98,7 @@ function Robot(position::Position;
         RobotStats(),
         Set{Tuple{Int64,Int64}}(),
         Set{Tuple{Int64,Int64}}(),
-        [position]
+        [position],
     )
 end
 
@@ -160,7 +162,7 @@ end
 
 Charge robot battery. Returns true if fully charged.
 """
-function charge!(robot::Robot, charge_rate::Float64=10.0)::Bool
+function charge!(robot::Robot, charge_rate::Float64 = 10.0)::Bool
     if robot.state != Charging
         robot.state = Charging
     end
@@ -218,13 +220,13 @@ function get_status(robot::Robot)::Dict{String,Any}
             "cleaning_time" => robot.stats.cleaning_time,
             "battery_cycles" => robot.stats.battery_cycles,
             "errors" => robot.stats.errors_encountered,
-            "stuck_count" => robot.stats.stuck_count
+            "stuck_count" => robot.stats.stuck_count,
         ),
         "sensors" => Dict(
             "obstacle_front" => robot.sensor_data.obstacle_front,
             "obstacle_left" => robot.sensor_data.obstacle_left,
             "obstacle_right" => robot.sensor_data.obstacle_right,
-            "cliff_detected" => robot.sensor_data.cliff_detected
-        )
+            "cliff_detected" => robot.sensor_data.cliff_detected,
+        ),
     )
 end

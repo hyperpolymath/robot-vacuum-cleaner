@@ -4,7 +4,7 @@
 //! Tests complete workflows like cleaning a room, navigating between points, battery management
 
 use robot_vacuum_cleaner::{
-    Robot, Environment, Simulator, SimulationConfig, Position, RobotState, CleaningMode,
+    CleaningMode, Environment, Position, Robot, RobotState, SimulationConfig, Simulator,
 };
 
 #[test]

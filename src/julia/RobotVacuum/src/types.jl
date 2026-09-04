@@ -65,7 +65,7 @@ end
 
 Normalize velocity to unit vector.
 """
-function Base.normalize(v::Velocity)::Velocity
+function LinearAlgebra.normalize(v::Velocity)::Velocity
     mag = magnitude(v)
     mag > 0.0 ? Velocity(v.vx / mag, v.vy / mag) : v
 end
@@ -132,7 +132,7 @@ function SensorData()
     SensorData(
         false, false, false, false,  # obstacles
         false, false,                 # cliff, bumper
-        Inf, Inf, Inf, Inf          # distances
+        Inf, Inf, Inf, Inf,          # distances
     )
 end
 
