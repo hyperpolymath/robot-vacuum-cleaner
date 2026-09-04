@@ -409,15 +409,6 @@ jobs:
           # Add actual deployment commands here
           # e.g., kubectl apply, helm upgrade, etc.
 
-      - name: Notify deployment
-        uses: 8398a7/action-slack@v3.19.0
-        if: always()
-        with:
-          status: ${{ job.status }}
-          text: 'Deployment to production ${{ job.status }}'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        continue-on-error: true
-
   # Notification job
   notify:
     name: Notify
@@ -440,4 +431,4 @@ jobs:
       - name: Send notification
         run: |
           echo "Pipeline status: ${{ steps.check.outputs.status }}"
-          # Add notification logic (Slack, email, etc.)
+          # Add an approved notification channel here when one is selected.
