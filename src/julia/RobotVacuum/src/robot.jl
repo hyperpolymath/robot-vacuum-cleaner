@@ -77,10 +77,10 @@ Create a new robot vacuum cleaner.
 - `sensor_range::Float64=2.0`: Sensor range
 """
 function Robot(position::Position;
-               battery_capacity::Float64=100.0,
-               cleaning_width::Float64=0.3,
-               speed::Float64=0.2,
-               sensor_range::Float64=2.0)
+               battery_capacity::Float64 = 100.0,
+               cleaning_width::Float64 = 0.3,
+               speed::Float64 = 0.2,
+               sensor_range::Float64 = 2.0)
     Robot(
         position,
         battery_capacity,
@@ -160,7 +160,7 @@ end
 
 Charge robot battery. Returns true if fully charged.
 """
-function charge!(robot::Robot, charge_rate::Float64=10.0)::Bool
+function charge!(robot::Robot, charge_rate::Float64 = 10.0)::Bool
     if robot.state != Charging
         robot.state = Charging
     end
