@@ -24,11 +24,11 @@ struct SimulationConfig
 end
 
 function SimulationConfig(;
-    room_type::String="furnished",
-    cleaning_mode::CleaningMode=Auto,
-    max_steps::Int=10000,
-    enable_slam::Bool=true,
-    random_seed::Union{Int,Nothing}=nothing
+    room_type::String = "furnished",
+    cleaning_mode::CleaningMode = Auto,
+    max_steps::Int = 10000,
+    enable_slam::Bool = true,
+    random_seed::Union{Int,Nothing} = nothing
 )
     SimulationConfig(room_type, cleaning_mode, max_steps, enable_slam, random_seed)
 end
