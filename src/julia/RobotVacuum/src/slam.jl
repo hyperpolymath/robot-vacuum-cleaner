@@ -15,7 +15,7 @@ mutable struct OccupancyGrid
     resolution::Float64
 end
 
-function OccupancyGrid(width::Int, height::Int, resolution::Float64=0.05)
+function OccupancyGrid(width::Int, height::Int, resolution::Float64 = 0.05)
     OccupancyGrid(zeros(Float32, height, width), width, height, resolution)
 end
 
@@ -39,7 +39,7 @@ mutable struct ParticleFilter
     num_particles::Int
 end
 
-function ParticleFilter(num_particles::Int=100)
+function ParticleFilter(num_particles::Int = 100)
     particles = [
         Particle(Pose(0.0, 0.0, 0.0), 1.0 / num_particles) for _ in 1:num_particles
     ]
@@ -69,11 +69,8 @@ mutable struct SLAM
     particle_filter::ParticleFilter
 end
 
-function SLAM(width::Int, height::Int, resolution::Float64=0.05, num_particles::Int=100)
-    SLAM(
-        OccupancyGrid(width, height, resolution),
-        ParticleFilter(num_particles)
-    )
+function SLAM(width::Int, height::Int, resolution::Float64 = 0.05, num_particles::Int = 100)
+    SLAM(OccupancyGrid(width, height, resolution), ParticleFilter(num_particles))
 end
 
 """

@@ -67,7 +67,7 @@ end
 Create room with random furniture obstacles.
 """
 function create_room_with_furniture(
-    width::Int, height::Int, num_obstacles::Int=5
+    width::Int, height::Int, num_obstacles::Int = 5
 )::Environment
     if width < 15 || height < 15
         throw(ArgumentError("Room must be at least 15x15."))
@@ -152,7 +152,7 @@ end
 
 Advance simulation time.
 """
-function step!(env::Environment, delta_time::Float64=0.1)
+function step!(env::Environment, delta_time::Float64 = 0.1)
     env.sim_time += delta_time
 end
 
@@ -161,7 +161,7 @@ end
 
 Reset environment to initial state.
 """
-function Base.reset!(env::Environment)
+function reset!(env::Environment)
     env.dirt_map .= true
     env.sim_time = 0.0
 end

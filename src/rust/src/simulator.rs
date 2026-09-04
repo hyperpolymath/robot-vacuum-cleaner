@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 //! Simulation controller
 
-use crate::robot::{Robot, RobotState};
 use crate::environment::Environment;
+use crate::robot::{Robot, RobotState};
 
 /// Simulation configuration
 pub struct SimulationConfig {

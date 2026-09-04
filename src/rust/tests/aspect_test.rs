@@ -3,9 +3,7 @@
 //!
 //! Tests edge cases, error conditions, and safety properties
 
-use robot_vacuum_cleaner::{
-    Robot, Environment, Position, RobotState, Simulator, SimulationConfig,
-};
+use robot_vacuum_cleaner::{Environment, Position, Robot, RobotState, SimulationConfig, Simulator};
 
 #[test]
 fn aspect_robot_at_boundary_cannot_escape() {

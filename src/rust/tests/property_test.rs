@@ -4,7 +4,7 @@
 //! Tests invariants that should hold for all valid robot states
 
 use proptest::prelude::*;
-use robot_vacuum_cleaner::{Robot, Position, Environment, Simulator, SimulationConfig};
+use robot_vacuum_cleaner::{Environment, Position, Robot, SimulationConfig, Simulator};
 
 // Strategy for generating valid positions within reasonable bounds
 fn position_strategy() -> impl Strategy<Value = Position> {

@@ -4,7 +4,7 @@
 //! Performance baseline tests for critical operations
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use robot_vacuum_cleaner::{Robot, Position, Environment, Simulator, SimulationConfig};
+use robot_vacuum_cleaner::{Environment, Position, Robot, SimulationConfig, Simulator};
 
 fn bench_robot_creation(c: &mut Criterion) {
     c.bench_function("robot_creation", |b| {

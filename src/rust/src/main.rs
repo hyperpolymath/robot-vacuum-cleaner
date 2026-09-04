@@ -3,8 +3,8 @@
 
 use clap::Parser;
 use env_logger::Env;
-use robot_vacuum_cleaner::{Robot, Environment, Simulator, Position};
 use robot_vacuum_cleaner::simulator::SimulationConfig;
+use robot_vacuum_cleaner::{Environment, Position, Robot, Simulator};
 
 /// Robot Vacuum Cleaner Simulator
 #[derive(Parser, Debug)]
@@ -46,7 +46,10 @@ fn main() {
     let log_level = if args.verbose { "debug" } else { "info" };
     env_logger::Builder::from_env(Env::default().default_filter_or(log_level)).init();
 
-    log::info!("Robot Vacuum Cleaner Simulator v{}", robot_vacuum_cleaner::VERSION);
+    log::info!(
+        "Robot Vacuum Cleaner Simulator v{}",
+        robot_vacuum_cleaner::VERSION
+    );
     log::info!("Initializing simulation...");
 
     // Create environment

@@ -5,17 +5,17 @@
 //! cleaner simulator with advanced path planning, SLAM, and control algorithms.
 
 #![forbid(unsafe_code)]
-pub mod robot;
 pub mod environment;
 pub mod pathfinding;
-pub mod slam;
+pub mod robot;
 pub mod simulator;
+pub mod slam;
 pub mod types;
 
-pub use robot::{Robot, RobotState, CleaningMode};
-pub use environment::{Environment, CellType};
-pub use simulator::{Simulator, SimulationConfig, SimulationResults};
-pub use types::{Position, Velocity, Pose};
+pub use environment::{CellType, Environment};
+pub use robot::{CleaningMode, Robot, RobotState};
+pub use simulator::{SimulationConfig, SimulationResults, Simulator};
+pub use types::{Pose, Position, Velocity};
 
 /// Library version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
