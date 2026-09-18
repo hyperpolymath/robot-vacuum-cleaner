@@ -85,7 +85,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4.37.9
+        uses: github/codeql-action/upload-sarif@v4.38.0
         if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
@@ -149,7 +149,7 @@ jobs:
           directories: src/julia/RobotVacuum/src
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.0
         with:
           files: lcov.info
           flags: julia-${{ matrix.julia-version }}
@@ -167,7 +167,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.0
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: rustfmt, clippy
@@ -194,7 +194,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Rust coverage
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.0
         with:
           file: src/rust/coverage/cobertura.xml
           flags: rust
@@ -218,7 +218,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4.3.0
+        uses: docker/setup-buildx-action@v4.4.0
 
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
@@ -242,7 +242,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build container image
-        uses: docker/build-push-action@v7.3.0
+        uses: docker/build-push-action@v7.4.0
         with:
           context: .
           file: ./docker/Containerfile
@@ -264,7 +264,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy image results
-        uses: github/codeql-action/upload-sarif@v4.37.9
+        uses: github/codeql-action/upload-sarif@v4.38.0
         if: always() && hashFiles('trivy-image-results.sarif') != ''
         with:
           sarif_file: 'trivy-image-results.sarif'
@@ -277,7 +277,7 @@ jobs:
           failure-threshold: warning
 
       - name: Scan with Grype
-        uses: anchore/scan-action@v7.4.1
+        uses: anchore/scan-action@v7.4.2
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           fail-build: false
@@ -286,7 +286,7 @@ jobs:
       - name: Push container image
         id: push
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v7.3.0
+        uses: docker/build-push-action@v7.4.0
         with:
           context: .
           file: ./docker/Containerfile
