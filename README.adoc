@@ -10,7 +10,6 @@ image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,l
 A comprehensive, production-grade robot vacuum cleaner simulation system with dual Julia and Rust implementations, GraphQL API, SLAM algorithms, and enterprise CI/CD infrastructure.
 
 [![CI/CD](https://github.com/Hyperpolymath/robot-vacuum-cleaner/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/Hyperpolymath/robot-vacuum-cleaner/actions)
-[![codecov](https://codecov.io/gh/Hyperpolymath/robot-vacuum-cleaner/branch/main/graph/badge.svg)](https://codecov.io/gh/Hyperpolymath/robot-vacuum-cleaner)
 
 == Features
 
