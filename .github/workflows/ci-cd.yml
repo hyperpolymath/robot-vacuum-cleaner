@@ -92,14 +92,6 @@ jobs:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy-filesystem'
 
-      - name: Run Snyk security scan
-        uses: snyk/actions/node@v1.0.0
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-
       - name: OWASP Dependency Check
         uses: dependency-check/dependency-check_action@1.1.0
         with:
@@ -149,14 +141,6 @@ jobs:
         with:
           directories: src/julia/RobotVacuum/src
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7.1.0
-        with:
-          files: lcov.info
-          flags: julia-${{ matrix.julia-version }}
-          name: julia-${{ matrix.julia-version }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   # Rust tests
   test-rust:
     name: Rust Tests
@@ -192,15 +176,6 @@ jobs:
           cargo install cargo-tarpaulin
           cargo tarpaulin --out Xml --output-dir coverage
         working-directory: src/rust
-        continue-on-error: true
-
-      - name: Upload Rust coverage
-        uses: codecov/codecov-action@v7.1.0
-        with:
-          file: src/rust/coverage/cobertura.xml
-          flags: rust
-          name: rust
-          token: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
 
   # Build and scan container images
