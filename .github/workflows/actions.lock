@@ -120,11 +120,6 @@ dependencies:
         commit: 'sha1-3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c'
         owner_id: 44036562
         repo_id: 192626254
-    'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd':
-        ref: 'v8.0.0'
-        commit: 'sha1-ed597411d8f924073f98dfc5c65a23a2325f34cd'
-        owner_id: 44036562
-        repo_id: 205262760
     'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f':
         ref: 'v7.0.0'
         commit: 'sha1-bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
@@ -165,7 +160,7 @@ dependencies:
             - 'aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514'
     'dawidd6/action-send-mail@v3.12.0':
         ref: 'v3.12.0'
-        commit: 'sha1-67ce3558d613188179559c61d3565140cf389968'
+        commit: 'sha1-2cea9617b09d79a095af21254fbcb7ae95903dde'
         owner_id: 9713907
         repo_id: 222439721
     'dependabot/fetch-metadata@v3.1.0':
