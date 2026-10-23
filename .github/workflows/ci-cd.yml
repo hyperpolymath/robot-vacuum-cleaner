@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0  # Full history for SonarCloud
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v3.0.2
+        uses: julia-actions/setup-julia@v3.0.3
         with:
           version: ${{ env.JULIA_VERSION }}
 
@@ -86,7 +86,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4.38.3
+        uses: github/codeql-action/upload-sarif@v4.39.0
         if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
@@ -122,7 +122,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Set up Julia ${{ matrix.julia-version }}
-        uses: julia-actions/setup-julia@v3.0.2
+        uses: julia-actions/setup-julia@v3.0.3
         with:
           version: ${{ matrix.julia-version }}
 
@@ -240,7 +240,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy image results
-        uses: github/codeql-action/upload-sarif@v4.38.3
+        uses: github/codeql-action/upload-sarif@v4.39.0
         if: always() && hashFiles('trivy-image-results.sarif') != ''
         with:
           sarif_file: 'trivy-image-results.sarif'
@@ -348,7 +348,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v3.0.2
+        uses: julia-actions/setup-julia@v3.0.3
         with:
           version: ${{ env.JULIA_VERSION }}
 
