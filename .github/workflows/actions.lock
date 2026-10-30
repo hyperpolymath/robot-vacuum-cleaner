@@ -22,18 +22,18 @@ workflows:
         - 'aquasecurity/trivy-action@v0.36.0'
         - 'dependency-check/dependency-check_action@1.1.0'
         - 'docker/build-push-action@v7.4.0'
-        - 'docker/login-action@v4.6.0'
+        - 'docker/login-action@v4.7.0'
         - 'docker/metadata-action@v6.2.0'
         - 'docker/setup-buildx-action@v4.4.1'
-        - 'github/codeql-action@v4.38.3'
+        - 'github/codeql-action@v4.39.1'
         - 'gitleaks/gitleaks-action@v3.0.0'
         - 'hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387'
         - 'julia-actions/julia-processcoverage@v1.2.2'
-        - 'julia-actions/setup-julia@v3.0.2'
+        - 'julia-actions/setup-julia@v3.0.3'
         - 'sonarsource/sonarcloud-github-action@v5.0.0'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.38.3'
+        - 'github/codeql-action@v4.39.1'
     '.github/workflows/dependabot-automerge.yml':
         - 'dependabot/fetch-metadata@v3.1.0'
     '.github/workflows/dogfood-gate.yml':
@@ -50,7 +50,7 @@ workflows:
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
     '.github/workflows/push-email-notify.yml':
-        - 'dawidd6/action-send-mail@v3.12.0'
+        - 'dawidd6/action-send-mail@v23'
     '.github/workflows/scorecard.yml': []
     '.github/workflows/secret-scanner.yml': []
     '.github/workflows/workflow-linter.yml':
@@ -158,9 +158,9 @@ dependencies:
         uses:
             - 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae'
             - 'aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514'
-    'dawidd6/action-send-mail@v3.12.0':
-        ref: 'v3.12.0'
-        commit: 'sha1-2cea9617b09d79a095af21254fbcb7ae95903dde'
+    'dawidd6/action-send-mail@v23':
+        ref: 'v23'
+        commit: 'sha1-47af4a10b540781705f283a2cf1a9650713ac795'
         owner_id: 9713907
         repo_id: 222439721
     'dependabot/fetch-metadata@v3.1.0':
@@ -178,9 +178,9 @@ dependencies:
         commit: 'sha1-c3c9e263c25d99ce0380d002d59b67737d91b0dc'
         owner_id: 5429470
         repo_id: 241092383
-    'docker/login-action@v4.6.0':
-        ref: 'v4.6.0'
-        commit: 'sha1-dbcb813823bdd20940b903addbd779551569679f'
+    'docker/login-action@v4.7.0':
+        ref: 'v4.7.0'
+        commit: 'sha1-81c6f93d4bc991e510b342a00b419b3bb4efc5c6'
         owner_id: 5429470
         repo_id: 287743349
     'docker/metadata-action@v6.2.0':
@@ -193,9 +193,9 @@ dependencies:
         commit: 'sha1-f87e5991a6d7451dcb8d9637bfbc97413f497069'
         owner_id: 5429470
         repo_id: 288485773
-    'github/codeql-action@v4.38.3':
-        ref: 'v4.38.3'
-        commit: 'sha1-24c54180a607b1449ed407dd24f251e4e9147c8d'
+    'github/codeql-action@v4.39.1':
+        ref: 'v4.39.1'
+        commit: 'sha1-9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         owner_id: 9919
         repo_id: 259445878
     'gitleaks/gitleaks-action@v3.0.0':
@@ -204,7 +204,7 @@ dependencies:
         owner_id: 90395851
         repo_id: 242854909
     'hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387':
-        ref: '06be81baf89a55ffd0e24b8f04a4185738dd3387'
+        ref: 'v3.5.0'
         commit: 'sha1-06be81baf89a55ffd0e24b8f04a4185738dd3387'
         owner_id: 34047791
         repo_id: 212438777
@@ -218,9 +218,9 @@ dependencies:
         commit: 'sha1-03114f09f119417c3242a9fb6e0b722676aedf38'
         owner_id: 53965732
         repo_id: 249500631
-    'julia-actions/setup-julia@v3.0.2':
-        ref: 'v3.0.2'
-        commit: 'sha1-fa02766e078afaaf09b14210362cee14137e6a32'
+    'julia-actions/setup-julia@v3.0.3':
+        ref: 'v3.0.3'
+        commit: 'sha1-da908477b5db94c10ffce8cfea9f2b3b9d5db687'
         owner_id: 53965732
         repo_id: 202020219
     'peter-evans/repository-dispatch@v4.0.1':
