@@ -11,7 +11,7 @@ workflows:
         - 'actions/configure-pages@v6.0.0'
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
-        - 'haskell-actions/setup@v2.12.0'
+        - 'haskell-actions/setup@v2.12.1'
     '.github/workflows/ci-cd.yml':
         - 'actions-rust-lang/setup-rust-toolchain@v2.0.0'
         - 'actions/attest-build-provenance@v4.2.2'
@@ -50,7 +50,7 @@ workflows:
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
     '.github/workflows/push-email-notify.yml':
-        - 'dawidd6/action-send-mail@v3.12.0'
+        - 'dawidd6/action-send-mail@v22'
     '.github/workflows/scorecard.yml': []
     '.github/workflows/secret-scanner.yml': []
     '.github/workflows/workflow-linter.yml':
@@ -158,9 +158,9 @@ dependencies:
         uses:
             - 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae'
             - 'aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514'
-    'dawidd6/action-send-mail@v3.12.0':
-        ref: 'v3.12.0'
-        commit: 'sha1-2cea9617b09d79a095af21254fbcb7ae95903dde'
+    'dawidd6/action-send-mail@v22':
+        ref: 'v22'
+        commit: 'sha1-67ce3558d613188179559c61d3565140cf389968'
         owner_id: 9713907
         repo_id: 222439721
     'dependabot/fetch-metadata@v3.1.0':
@@ -208,9 +208,9 @@ dependencies:
         commit: 'sha1-06be81baf89a55ffd0e24b8f04a4185738dd3387'
         owner_id: 34047791
         repo_id: 212438777
-    'haskell-actions/setup@v2.12.0':
-        ref: 'v2.12.0'
-        commit: 'sha1-6037f33647c3f17758a2356c80fc4a53d7e0685d'
+    'haskell-actions/setup@v2.12.1':
+        ref: 'v2.12.1'
+        commit: 'sha1-0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d'
         owner_id: 75048950
         repo_id: 623796603
     'julia-actions/julia-processcoverage@v1.2.2':
