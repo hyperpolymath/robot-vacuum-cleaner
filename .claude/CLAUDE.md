@@ -40,12 +40,9 @@ The following files in `.machine_readable/` contain structured project metadata:
 |--------|-------------|
 | TypeScript | AffineScript |
 | ReScript | AffineScript |
-| Deno | Bun |
-| Node.js | Bun |
-| npm | Bun |
-| pnpm/yarn | Bun |
+| Node.js, yarn | Bun (then Deno, pnpm, npm as fallbacks) |
 | Go | Rust |
-| Python (general) | ReScript/Rust |
+| Python (general) | AffineScript/Rust |
 | Java/Kotlin | Rust/Tauri/Dioxus |
 | Swift | Tauri/Dioxus |
 | React Native | Tauri/Dioxus |

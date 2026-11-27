@@ -1,0 +1,2 @@
+# package.json is kept out of Prettier so its existing layout is not reformatted.
+package.json
