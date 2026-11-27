@@ -1,3 +1,2 @@
-# package.json is JCS-canonical (LANGUAGE-POLICY §1.4).
-# Prettier must not reformat it.
+# package.json is kept out of Prettier so its existing layout is not reformatted.
 package.json
